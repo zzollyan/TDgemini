@@ -150,9 +150,45 @@
       0% { opacity: 1; }
       100% { opacity: 0; }
     }
+
+    /* Mobile Landscape Mode Optimizations */
+    @media (max-height: 540px) and (orientation: landscape) {
+      #topHudBar {
+        padding-top: 3px !important;
+        padding-bottom: 3px !important;
+      }
+      #mainContainer {
+        height: calc(100vh - 44px) !important;
+      }
+      .mobile-landscape-compact {
+        padding: 4px 8px !important;
+        font-size: 10px !important;
+      }
+      #battleSquadDock {
+        padding: 4px 8px !important;
+        gap: 6px !important;
+      }
+      #battleUnitManagerPanel, #battleUnitInspector {
+        top: 46px !important;
+        bottom: 64px !important;
+        max-height: calc(100vh - 115px) !important;
+      }
+    }
   </style>
 </head>
 <body class="relative w-screen h-screen overflow-hidden select-none bg-[#070812]">
+
+  <!-- MOBILE PORTRAIT TO LANDSCAPE SUGGESTION BANNER (Non-blocking or 1-tap dismissible) -->
+  <div id="mobileRotateBanner" class="fixed top-0 left-0 right-0 z-50 hidden bg-gradient-to-r from-amber-600 via-rose-600 to-fuchsia-700 text-white px-3 py-1.5 text-[11px] font-tech flex items-center justify-between shadow-lg">
+    <div class="flex items-center gap-2">
+      <span class="px-1.5 py-0.5 bg-black/40 rounded font-bold">MOBILE LANDSCAPE</span>
+      <span>Xoay ngang điện thoại hoặc bấm Khóa Màn Hình Ngang để chơi tối ưu nhất!</span>
+    </div>
+    <div class="flex items-center gap-1.5">
+      <button onclick="UI.lockLandscapeMode()" class="px-2 py-0.5 rounded bg-amber-300 text-slate-950 font-bold">XOAY NGANG</button>
+      <button onclick="document.getElementById('mobileRotateBanner').classList.add('hidden'); UI.dismissedRotateBanner = true;" class="px-2 py-0.5 rounded bg-black/40 text-white">ĐÓNG [X]</button>
+    </div>
+  </div>
 
   <!-- BACKGROUND CANVAS (Dynamic Parallax Lobby & Astral Particles) -->
   <canvas id="lobbyBgCanvas" class="absolute inset-0 w-full h-full pointer-events-none z-0"></canvas>
@@ -228,8 +264,8 @@
       </div>
 
       <!-- Return to Lobby Button (shown when inside sub-screens) -->
-      <button onclick="UI.toggleFullscreen()" class="clip-btn px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-cyan-300 font-tech text-[10px] sm:text-xs font-bold border border-cyan-500/40" title="Toggle Fullscreen for Mobile">
-        FULLSCREEN
+      <button onclick="UI.lockLandscapeMode()" class="clip-btn px-2.5 py-1.5 bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 font-tech text-[10px] sm:text-xs font-bold border border-amber-400/50" title="Bật Toàn Màn Hình & Khóa Màn Hình Ngang Cho Mobile">
+        📱 MÀN HÌNH NGANG
       </button>
       <button id="btnReturnLobby" onclick="UI.switchScreen('lobby')" class="hidden clip-btn px-3 py-1.5 bg-gradient-to-r from-cyan-600 to-blue-700 text-white font-tech text-xs font-bold tracking-wider border border-cyan-300/50 shadow-lg">
         LOBBY
@@ -792,7 +828,7 @@
           <!-- Right Controls: In-Battle Unit Manager Button, Elemental Guide, Speed, Auto-Wave, Camera, Exit -->
           <div class="anime-panel px-2.5 py-1.5 rounded-lg pointer-events-auto flex flex-wrap items-center gap-1.5">
             <button onclick="BattleEngine.toggleUnitManager()" class="clip-btn px-2.5 sm:px-3 py-1 bg-gradient-to-r from-amber-500 to-orange-600 text-slate-950 font-tech font-bold text-[11px] sm:text-xs shadow">
-              UNIT MGR [<span id="btnUnitMgrCount">0/12</span>]
+              UNIT MGR [<span id="btnUnitMgrCount">0/14</span>]
             </button>
             <button id="btnBattleSpeed" onclick="BattleEngine.cycleSpeed()" class="clip-btn px-2.5 py-1 bg-cyan-600/30 border border-cyan-400/50 text-cyan-200 font-tech font-bold text-[11px] sm:text-xs">1X</button>
             <button id="btnAutoWave" onclick="BattleEngine.toggleAutoWave()" class="clip-btn px-2 py-1 bg-emerald-600/30 border border-emerald-400/50 text-emerald-200 font-tech font-bold text-[10px] sm:text-xs">AUTO WAVE: ON</button>
@@ -800,7 +836,7 @@
             <button onclick="BattleEngine.zoomCamera(0.15)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded text-xs font-tech text-slate-200" title="Zoom In">+</button>
             <button onclick="BattleEngine.zoomCamera(-0.15)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded text-xs font-tech text-slate-200" title="Zoom Out">-</button>
             <button onclick="BattleEngine.resetCamera()" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded text-[10px] font-tech text-slate-300">CAM</button>
-            <button onclick="UI.toggleFullscreen()" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded text-[10px] font-tech text-cyan-300">FULL</button>
+            <button onclick="UI.lockLandscapeMode()" class="px-2 py-1 bg-amber-500/20 border border-amber-400/50 hover:bg-amber-500/40 rounded text-[10px] font-tech text-amber-300">NGANG</button>
             <button onclick="BattleEngine.leaveBattle()" class="clip-btn px-2.5 py-1 bg-rose-700/80 hover:bg-rose-600 text-white font-tech font-bold text-[11px] sm:text-xs">EXIT</button>
           </div>
         </div>
@@ -852,7 +888,7 @@
       <div id="battleUnitManagerPanel" class="absolute right-2 sm:right-3 bottom-24 sm:bottom-auto sm:top-28 z-30 w-[calc(100vw-16px)] max-w-sm sm:w-96 max-h-[58vh] sm:max-h-[68vh] anime-panel clip-angled p-3 border border-amber-400/60 shadow-2xl pointer-events-auto flex flex-col">
         <div class="flex items-center justify-between border-b border-slate-800 pb-2">
           <div>
-            <h3 class="font-display font-bold text-xs sm:text-sm text-amber-300">TACTICAL UNIT MANAGER (<span id="mgrCountHeader">0/12</span>)</h3>
+            <h3 class="font-display font-bold text-xs sm:text-sm text-amber-300">TACTICAL UNIT MANAGER (<span id="mgrCountHeader">0/14</span>)</h3>
             <p class="text-[10px] text-slate-400">Real-time Quick Upgrade, Auto-Upg, Skill &amp; Sell</p>
           </div>
           <div class="flex items-center gap-1">
@@ -876,14 +912,24 @@
         <div id="battleUnitManagerList" class="flex-1 overflow-y-auto space-y-2 pr-1 text-xs"></div>
       </div>
 
+      <!-- MOBILE LANDSCAPE LEFT THUMB QUICK ACTION PAD -->
+      <div class="absolute left-2 bottom-20 z-20 flex flex-col gap-1.5 pointer-events-auto md:hidden">
+        <button onclick="BattleEngine.upgradeAllAffordable()" class="clip-btn px-2.5 py-2 bg-emerald-600/90 text-slate-950 font-tech font-bold text-[10px] shadow-lg border border-emerald-300">
+          ⚡ UPGRADE ALL
+        </button>
+        <button onclick="BattleEngine.castAllReadySkills()" class="clip-btn px-2.5 py-2 bg-fuchsia-600/90 text-white font-tech font-bold text-[10px] shadow-lg border border-fuchsia-300">
+          ✦ ALL SKILLS
+        </button>
+      </div>
+
       <!-- BOTTOM SQUAD DEPLOYMENT DOCK -->
-      <div class="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-1.5 w-full max-w-2xl px-2 pointer-events-none">
+      <div class="absolute bottom-1.5 sm:bottom-3 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-1 w-full max-w-3xl px-2 pointer-events-none">
         <div class="flex items-center gap-2 pointer-events-auto">
           <button id="btnNextWavePrompt" onclick="BattleEngine.triggerNextWaveManual()" class="hidden clip-btn px-4 py-1 bg-gradient-to-r from-amber-500 to-orange-600 text-slate-950 font-tech font-bold text-xs shadow-lg animate-bounce">
             CALL NEXT WAVE EARLY (+BONUS ¥)
           </button>
         </div>
-        <div id="battleSquadDock" class="anime-panel px-3 py-2 rounded-xl border border-cyan-500/40 shadow-2xl pointer-events-auto flex items-center justify-center gap-2 sm:gap-3 flex-wrap">
+        <div id="battleSquadDock" class="anime-panel px-2.5 py-1.5 rounded-xl border border-cyan-500/40 shadow-2xl pointer-events-auto flex items-center justify-center gap-1.5 sm:gap-2.5 overflow-x-auto max-w-full">
           <!-- Populated with equipped 6 units -->
         </div>
       </div>
@@ -895,32 +941,35 @@
        MODALS: MAP SELECTOR, TRAIT PROBABILITY TABLE (100.0000%), VICTORY/DEFEAT
        ========================================================================= -->
 
-  <!-- MAP SELECTION MODAL (WITH DIFFICULTY SELECTOR: NORMAL / NIGHTMARE / HELL) -->
-  <div id="modalMapSelect" class="fixed inset-0 z-40 hidden bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-    <div class="anime-panel-gold clip-angled max-w-4xl w-full p-5 sm:p-6 max-h-[90vh] overflow-y-auto">
-      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-amber-500/30 pb-3 mb-4">
+  <!-- MAP SELECTION MODAL (WITH REAL-TIME ROTATION TIMER, RECOMMENDED ELEMENT & DIFFICULTY) -->
+  <div id="modalMapSelect" class="fixed inset-0 z-40 hidden bg-black/80 backdrop-blur-md flex items-center justify-center p-2 sm:p-4">
+    <div class="anime-panel-gold clip-angled max-w-5xl w-full p-4 sm:p-6 max-h-[92vh] overflow-y-auto">
+      <div class="flex flex-wrap items-center justify-between gap-2 border-b border-amber-500/30 pb-3 mb-3">
         <div>
-          <span class="text-[10px] font-tech uppercase text-amber-300">WORLD REALM &amp; DIFFICULTY SELECTOR</span>
-          <h2 class="font-display font-black text-xl sm:text-2xl text-white">SELECT BATTLEFIELD &amp; CHALLENGE MODE</h2>
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="text-[10px] font-tech uppercase px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-400/40">REAL-TIME REALM ROTATION</span>
+            <span id="realmRotationCountdown" class="text-[11px] font-tech font-bold text-amber-300">Resets in: 14m 59s</span>
+          </div>
+          <h2 class="font-display font-black text-lg sm:text-2xl text-white mt-1">SELECT REALM, ELEMENT COUNTER &amp; MUTATOR</h2>
         </div>
         <!-- Difficulty Mode Selector Buttons -->
-        <div class="flex flex-wrap items-center gap-1.5 bg-slate-950 p-1.5 rounded-lg border border-slate-800">
-          <button id="diffBtn-normal" onclick="UI.setMapDifficulty('normal')" class="px-3 py-1.5 rounded font-tech text-xs font-bold bg-cyan-600 text-white">
+        <div class="flex flex-wrap items-center gap-1 bg-slate-950 p-1.5 rounded-lg border border-slate-800">
+          <button id="diffBtn-normal" onclick="UI.setMapDifficulty('normal')" class="px-2.5 py-1 rounded font-tech text-[11px] font-bold bg-cyan-600 text-white">
             NORMAL (x1.0)
           </button>
-          <button id="diffBtn-nightmare" onclick="UI.setMapDifficulty('nightmare')" class="px-3 py-1.5 rounded font-tech text-xs font-bold bg-slate-900 text-amber-300">
-            ÁC MỘNG (x2.2 HP • x1.8 Reward)
+          <button id="diffBtn-nightmare" onclick="UI.setMapDifficulty('nightmare')" class="px-2.5 py-1 rounded font-tech text-[11px] font-bold bg-slate-900 text-amber-300">
+            ÁC MỘNG (x2.6 HP)
           </button>
-          <button id="diffBtn-hell" onclick="UI.setMapDifficulty('hell')" class="px-3 py-1.5 rounded font-tech text-xs font-bold bg-slate-900 text-rose-400">
-            ĐỊA NGỤC (x4.0 HP • Shields • x3.0)
+          <button id="diffBtn-hell" onclick="UI.setMapDifficulty('hell')" class="px-2.5 py-1 rounded font-tech text-[11px] font-bold bg-slate-900 text-rose-400">
+            ĐỊA NGỤC (x4.3 HP)
           </button>
-          <button id="diffBtn-infinite" onclick="UI.setMapDifficulty('infinite')" class="px-3 py-1.5 rounded font-tech text-xs font-bold bg-slate-900 text-fuchsia-400">
-            VÔ TẬN (ENDLESS WAVES • ∞)
+          <button id="diffBtn-infinite" onclick="UI.setMapDifficulty('infinite')" class="px-2.5 py-1 rounded font-tech text-[11px] font-bold bg-slate-900 text-fuchsia-400">
+            VÔ TẬN (∞)
           </button>
         </div>
         <button onclick="UI.closeModals()" class="px-3 py-1 rounded bg-slate-800 text-slate-300 hover:text-white font-tech text-xs">CLOSE [X]</button>
       </div>
-      <div id="mapCardsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+      <div id="mapCardsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-3.5"></div>
     </div>
   </div>
 
@@ -1140,7 +1189,12 @@
           yukimura: { bg1: '#082f49', bg2: '#06b6d4', hair: '#f1f5f9', hairShade: '#64748b', eye: '#38bdf8', aura: '#67e8f9', skin: '#f8fafc', weapon: 'frost_katana' },
           gilgamesh: { bg1: '#422006', bg2: '#eab308', hair: '#fde047', hairShade: '#b45309', eye: '#ef4444', aura: '#facc15', skin: '#fef3c7', weapon: 'babylon_gates' },
           akatsuki: { bg1: '#090514', bg2: '#ff2a5f', hair: '#0f172a', hairShade: '#ff2a5f', eye: '#ff2a5f', aura: '#ff2a5f', skin: '#f8fafc', weapon: 'eclipse_blades', isSecret: true },
-          aethelgard: { bg1: '#3b0764', bg2: '#f59e0b', hair: '#fef08a', hairShade: '#ec4899', eye: '#38bdf8', aura: '#fde047', skin: '#fffbeb', weapon: 'eternity_spear', isSecret: true }
+          aethelgard: { bg1: '#3b0764', bg2: '#f59e0b', hair: '#fef08a', hairShade: '#ec4899', eye: '#38bdf8', aura: '#fde047', skin: '#fffbeb', weapon: 'eternity_spear', isSecret: true },
+          // 4 Dedicated Economy / Gold-Buff Vanguard Units (Epic, Legendary, Mythic, Secret)
+          lycoris: { bg1: '#14532d', bg2: '#eab308', hair: '#fde047', hairShade: '#15803d', eye: '#4ade80', aura: '#facc15', skin: '#fef3c7', weapon: 'alchemy_chalice' },
+          midas: { bg1: '#451a03', bg2: '#f59e0b', hair: '#fef08a', hairShade: '#b45309', eye: '#fbbf24', aura: '#fde047', skin: '#fffbeb', weapon: 'golden_scepter' },
+          fortuna: { bg1: '#064e3b', bg2: '#ec4899', hair: '#f472b6', hairShade: '#047857', eye: '#fde047', aura: '#34d399', skin: '#fff1f2', weapon: 'fortune_wheel' },
+          mammon: { bg1: '#1e1b4b', bg2: '#ff2a5f', hair: '#fde047', hairShade: '#9f1239', eye: '#ff2a5f', aura: '#f59e0b', skin: '#f8fafc', weapon: 'treasury_throne', isSecret: true }
         };
         const p = palettes[unitId] || palettes.ignis;
         const uid = `${unitId}_${evolved ? 'evo' : 'base'}_${Math.random().toString(36).substring(2, 7)}`;
@@ -1242,6 +1296,86 @@
           return 1.45; // Mutual Light/Dark Counter +45%
         }
         return 1.0;
+      },
+      // Get the ideal counter element that deals +50% DMG against a target realm element
+      getRecommendedCounter(defenderElem) {
+        const reverseCycle = {
+          Aero: 'Pyro',
+          Terra: 'Aero',
+          Hydro: 'Terra',
+          Pyro: 'Hydro',
+          Umbra: 'Lux',
+          Lux: 'Umbra'
+        };
+        return reverseCycle[defenderElem] || 'Pyro';
+      }
+    };
+
+    /**
+     * REAL-TIME REALM ROTATION ENGINE
+     * Every 15 minutes in real-time, each realm rotates its Dominant Enemy Element,
+     * Active Tactical Mutator (Surge of Healers, Iron Fortress, Behemoth Growth, Split Swarm, etc.),
+     * and Bonus Resource Multiplier so no two realm runs feel identical!
+     */
+    const RealmRotationSystem = {
+      intervalMs: 15 * 60 * 1000, // 15-minute real-time tactical rotation window
+      mutators: [
+        {
+          id: 'vitality_surge',
+          name: 'Vitality Surge (Tràn Trề Sinh Lực)',
+          desc: '+35% tỉ lệ xuất hiện Quái Hồi Máu (Healer) & Quái Tăng Trưởng Máu (Grow HP Behemoth).',
+          focusArchetypes: ['HEALER', 'GROW_HP'],
+          bonusText: '+25% Gold & EXP'
+        },
+        {
+          id: 'aegis_phalanx',
+          name: 'Aegis Phalanx (Lá Chắn Bất Diệt)',
+          desc: 'Quái tạo khiên (Shielder) và Quái Giáp Cứng (Armored) xuất hiện dày đặc.',
+          focusArchetypes: ['SHIELDER', 'ARMORED'],
+          bonusText: '+2 Trait Shards khi thắng'
+        },
+        {
+          id: 'hydra_swarm',
+          name: 'Hydra Swarm (Bầy Đàn Phân Tách)',
+          desc: 'Tăng +25% số lượng quái mỗi đợt; nhiều Quái Phân Tách (Splitter) & Cuồng Nộ (Berserker).',
+          focusArchetypes: ['SPLITTER', 'BERSERKER'],
+          bonusText: '+30% Astral Gems'
+        },
+        {
+          id: 'chrono_rift',
+          name: 'Chrono Rift (Khe Nứt Không Gian)',
+          desc: 'Xuất hiện Quái Dịch Chuyển (Phase Blinker) và Quái Tái Tạo (Regenerator).',
+          focusArchetypes: ['BLINKER', 'REGEN'],
+          bonusText: '+2 Star Remnants'
+        }
+      ],
+
+      getCurrentSlotSeed() {
+        return Math.floor(Date.now() / this.intervalMs);
+      },
+
+      getRemainingTimeFormatted() {
+        const rem = this.intervalMs - (Date.now() % this.intervalMs);
+        const mins = Math.floor(rem / 60000);
+        const secs = Math.floor((rem % 60000) / 1000);
+        return `${String(mins).padStart(2, '0')}m ${String(secs).padStart(2, '0')}s`;
+      },
+
+      getRealmLiveState(mapId) {
+        const idx = MAP_DATABASE.findIndex(m => m.id === mapId);
+        const mapIdx = idx >= 0 ? idx : 0;
+        const seed = this.getCurrentSlotSeed();
+        const elemIdx = (seed + mapIdx * 2) % ELEMENT_SYSTEM.order.length;
+        const dominantElement = ELEMENT_SYSTEM.order[elemIdx];
+        const recommendedElement = ELEMENT_SYSTEM.getRecommendedCounter(dominantElement);
+        const mutator = this.mutators[(seed + mapIdx) % this.mutators.length];
+
+        return {
+          dominantElement,
+          recommendedElement,
+          mutator,
+          seed
+        };
       }
     };
 
@@ -1480,6 +1614,108 @@
         skillName: 'Genesis Starlight Array',
         skillDesc: 'Unleashes 1,150% True Lux Damage across all targets in range, breaks all Shields & grants +250 ¥ Aether.',
         quote: 'Across a million timelines, my starlight remains unbroken.',
+        evoCostGold: 45000,
+        evoCostRemnants: 65
+      },
+
+      // =====================================================================
+      // 4 NEW TACTICAL ECONOMY / GOLD-BUFF UNITS (EPIC, LEGENDARY, MYTHIC, SECRET)
+      // =====================================================================
+      lycoris: {
+        id: 'lycoris',
+        name: 'Lycoris: Alchemist of Greed',
+        evoName: 'Lycoris: Philosopher Arch-Transmuter',
+        rarity: 'Epic',
+        element: 'Terra',
+        placementType: 'Ground',
+        isEconomyUnit: true,
+        cost: 340,
+        baseDmg: 115,
+        baseRange: 135,
+        baseSpa: 1.40,
+        critRate: 0.15,
+        aoeRadius: 48,
+        waveBountyBonus: 220,
+        hitGoldBonus: 14,
+        passiveName: 'Alchemy Transmutation [BUFF TIỀN]',
+        passiveDesc: '[ECONOMY EPIC] Generates +14 ¥ per alchemy hit and +220 ¥ Aether Gold at the end of every wave (scales +35% per in-battle upgrade tier!).',
+        skillName: 'Golden Elixirs Rain',
+        skillDesc: 'Transmutes enemy armor into +280 ¥ instant Aether Gold and deals 320% Terra AoE DMG.',
+        quote: 'Lead into gold, monsters into treasury!',
+        evoCostGold: 4800,
+        evoCostRemnants: 10
+      },
+      midas: {
+        id: 'midas',
+        name: 'Midas: Golden Emperor',
+        evoName: 'Midas: Aurum Divinity',
+        rarity: 'Legendary',
+        element: 'Lux',
+        placementType: 'Hill',
+        isEconomyUnit: true,
+        cost: 560,
+        baseDmg: 245,
+        baseRange: 185,
+        baseSpa: 1.30,
+        critRate: 0.24,
+        aoeRadius: 65,
+        waveBountyBonus: 450,
+        hitGoldBonus: 24,
+        passiveName: 'Royal Treasury Decree [BUFF TIỀN]',
+        passiveDesc: '[ECONOMY LEGENDARY] Generates +450 ¥ per wave (scales with tier), +24 ¥ on hit, and reduces Upgrade Cost of nearby allies by 12%!',
+        skillName: 'Touch of Solid Gold',
+        skillDesc: 'Grants +500 ¥ Aether Gold immediately, gilds enemies (slowing by 35%) and deals 450% Lux DMG.',
+        quote: 'Everything my light touches belongs to the Imperial Vault.',
+        evoCostGold: 11500,
+        evoCostRemnants: 20
+      },
+      fortuna: {
+        id: 'fortuna',
+        name: 'Fortuna: Weaver of Astral Wealth',
+        evoName: 'Fortuna: Goddess of Infinite Bounty',
+        rarity: 'Mythic',
+        element: 'Aero',
+        placementType: 'Hybrid',
+        isEconomyUnit: true,
+        cost: 840,
+        baseDmg: 540,
+        baseRange: 210,
+        baseSpa: 1.18,
+        critRate: 0.35,
+        aoeRadius: 85,
+        waveBountyBonus: 850,
+        hitGoldBonus: 40,
+        interestRate: 0.08,
+        passiveName: 'Wheel of Sovereign Fortune [BUFF TIỀN]',
+        passiveDesc: '[ECONOMY MYTHIC] Generates +850 ¥ per wave + 8% compound interest on current Aether ¥, +40 ¥ per hit, and buffs allies in range by +25% DMG!',
+        skillName: 'Jackpot Constellation',
+        skillDesc: 'Spins the Astral Wheel to grant +950 ¥ Aether Gold and deals 720% Aero True AoE DMG.',
+        quote: 'Lady Luck always favors a rich Commander!',
+        evoCostGold: 24000,
+        evoCostRemnants: 40
+      },
+      mammon: {
+        id: 'mammon',
+        name: 'Mammon: Sovereign of Infinite Treasury',
+        evoName: 'Mammon: Omnipotent Ploutos [SECRET]',
+        rarity: 'Secret',
+        element: 'Umbra',
+        placementType: 'Hybrid',
+        isEconomyUnit: true,
+        cost: 1150,
+        baseDmg: 1080,
+        baseRange: 245,
+        baseSpa: 1.05,
+        critRate: 0.45,
+        aoeRadius: 105,
+        waveBountyBonus: 1600,
+        hitGoldBonus: 75,
+        interestRate: 0.12,
+        passiveName: 'Infinite Aether Monopoly [SECRET BUFF TIỀN]',
+        passiveDesc: '[SECRET ECONOMY] Generates +1,600 ¥ per wave + 12% interest, +75 ¥ per hit, and buffs ALL allies globally with +30% DMG & -15% SPA!',
+        skillName: 'Singularity Coin Cataclysm',
+        skillDesc: 'Drops a meteor of divine gold granting +1,800 ¥ Aether, shattering all Shields & dealing 1,050% Umbra True DMG.',
+        quote: 'Why fight with blades when you can buy reality itself?',
         evoCostGold: 45000,
         evoCostRemnants: 65
       }
@@ -2946,9 +3182,8 @@
           document.getElementById('autoSellEpic').checked = !!GameStore.state.autoSell.Epic;
           document.getElementById('autoSellLegendary').checked = !!GameStore.state.autoSell.Legendary;
         }
-
-        // Featured Banner Units (Including the 2 SECRET Monarchs & Gilgamesh)
-        const featuredIds = ['akatsuki', 'aethelgard', 'gilgamesh', 'kaelen', 'yukimura', 'aurelia'];
+        // Featured Banner Units (Including the 2 SECRET Monarchs, Mammon Economy Secret & Fortuna)
+        const featuredIds = ['akatsuki', 'aethelgard', 'mammon', 'fortuna', 'midas', 'gilgamesh'];
         const bannerEl = document.getElementById('summonBannerShowcase');
         if (bannerEl) {
           bannerEl.innerHTML = featuredIds.map(id => {
@@ -2956,12 +3191,13 @@
             return `
               <div class="p-2 rounded-lg bg-slate-950/90 border-2 rarity-${u.rarity.toLowerCase()} flex flex-col items-center text-center relative">
                 <span class="absolute top-1 left-1 w-4 h-4" title="${u.element}">${ArtEngine.getElementSvg(u.element)}</span>
+                ${u.isEconomyUnit ? `<span class="absolute top-1 right-1 px-1 py-0.2 rounded bg-amber-500 text-slate-950 font-tech font-bold text-[7px]">¥ BUFF</span>` : ''}
                 <div class="w-16 h-16 rounded-lg overflow-hidden mb-1.5">
                   ${ArtEngine.getCharacterPortraitSvg(u.id, false)}
                 </div>
                 <span class="text-[8px] font-tech uppercase px-1.5 py-0.5 rounded bg-slate-900">${u.rarity} • ${u.element}</span>
                 <div class="font-display font-bold text-[11px] text-white mt-1 truncate w-full">${u.name.split(':')[0]}</div>
-                <div class="text-[9px] text-cyan-300 truncate w-full">${u.passiveName}</div>
+                <div class="text-[9px] text-amber-300 truncate w-full">${u.passiveName}</div>
               </div>
             `;
           }).join('');
@@ -3520,10 +3756,11 @@
       wave: 1,
       maxWaves: 12,
       currentWaveElement: 'Pyro',
+      realmLiveState: null,
       nexusHp: 100,
       maxNexusHp: 100,
       mana: 520,
-      maxTotalPlacedUnits: 12,
+      maxTotalPlacedUnits: 14,
       gameSpeed: 1,
       autoWave: true,
       autoSkill: false,
@@ -3695,6 +3932,7 @@
         UI.closeModals();
         const map = MAP_DATABASE.find(m => m.id === mapId) || MAP_DATABASE[0];
         this.currentMap = map;
+        this.realmLiveState = RealmRotationSystem.getRealmLiveState(map.id);
         this.difficulty = diffMode || UI.selectedDifficulty || 'normal';
         const dCfg = this.difficultyConfig[this.difficulty] || this.difficultyConfig.normal;
 
@@ -3972,6 +4210,7 @@
           evolved: squadInstance.evolved,
           name: stats.displayName,
           rarity: stats.base.rarity,
+          isEconomyUnit: !!stats.base.isEconomyUnit,
           x: wx,
           y: wy,
           onHill,
@@ -3990,13 +4229,16 @@
           passiveName: stats.base.passiveName,
           slowEffect: stats.base.slowEffect || 0,
           waveBountyBonus: stats.base.waveBountyBonus || 0,
+          hitGoldBonus: stats.base.hitGoldBonus || 0,
+          interestRate: stats.base.interestRate || 0,
           trait: stats.trait,
           targeting: 'First', // First | Strongest | Weakest | Last
           attackCooldown: 0,
           attackCount: 0,
           skillCooldown: 0,
           stunTimer: 0,
-          totalDamageDealt: 0
+          totalDamageDealt: 0,
+          totalGoldGenerated: 0
         };
 
         this.placedUnits.push(deployed);
@@ -4007,6 +4249,55 @@
         this.updateBattleHud();
         this.renderSquadDock();
         this.renderUnitManager();
+      },
+
+      // Recalculate Aethelgard, Mammon (+30% DMG, -15% SPA), Fortuna (+25% DMG in range) & Seraphina (-18% SPA)
+      recalculateGlobalAndAuraBuffs() {
+        const hasAethelgard = this.placedUnits.some(u => u.unitId === 'aethelgard');
+        const hasMammon = this.placedUnits.some(u => u.unitId === 'mammon');
+        const seraphinas = this.placedUnits.filter(u => u.unitId === 'seraphina');
+        const fortunas = this.placedUnits.filter(u => u.unitId === 'fortuna');
+
+        this.placedUnits.forEach(u => {
+          const tierDmgMult = Math.pow(1.34, u.tier - 1);
+          const tierRangeMult = Math.pow(1.06, u.tier - 1);
+          const tierSpaMult = Math.pow(0.93, u.tier - 1);
+
+          let globalDmgMult = 1.0;
+          if (hasAethelgard) globalDmgMult *= 1.20;
+          if (hasMammon) globalDmgMult *= 1.30;
+
+          const globalRangeMult = hasAethelgard ? 1.15 : 1.0;
+          const nearFortuna = fortunas.some(f => Math.hypot(f.x - u.x, f.y - u.y) <= f.range);
+          if (nearFortuna) globalDmgMult *= 1.25;
+
+          // Check if near any Seraphina (within 190px) for Tidal Sanctuary +18% Attack Speed
+          const nearSeraphina = seraphinas.some(s => Math.hypot(s.x - u.x, s.y - u.y) <= 190);
+          let auraSpaMult = nearSeraphina ? 0.84 : 1.0;
+          if (hasMammon) auraSpaMult *= 0.85;
+
+          u.dmg = Math.round(u.baseDmgStat * tierDmgMult * globalDmgMult);
+          u.range = Math.round(u.baseRangeStat * tierRangeMult * globalRangeMult);
+          u.spa = Number(Math.max(0.20, u.baseSpaStat * tierSpaMult * auraSpaMult).toFixed(2));
+        });
+      },
+
+      selectPlacedUnit(placedId) {
+        this.selectedPlacedUnitId = placedId;
+        // On mobile, hide Unit Manager when inspecting a specific unit so panels don't overlap
+        if (placedId && window.innerWidth < 768) {
+          const mgr = document.getElementById('battleUnitManagerPanel');
+          if (mgr) mgr.classList.add('hidden');
+        }
+        this.renderPlacedUnitInspector();
+        this.renderUnitManager();
+      },
+
+      getUpgradeCost(u) {
+        // Midas Passive [Royal Treasury Decree]: Nearby allies within 185px enjoy -12% Upgrade Cost discount!
+        const nearMidas = this.placedUnits.some(m => m.unitId === 'midas' && Math.hypot(m.x - u.x, m.y - u.y) <= 185);
+        const discount = nearMidas ? 0.88 : 1.0;
+        return Math.round(u.totalSpent * 0.72 * discount);
       },
 
       // Recalculate Aethelgard Global Starlight Buff (+20% DMG, +15% Range) & Seraphina Tidal Sanctuary Aura (-18% SPA)
@@ -4159,10 +4450,20 @@
         this.shockwaves.push({ x: u.x, y: u.y, r: 15, maxR: u.range, color: '#ec4899', alpha: 1 });
         this.floatingTexts.push({ x: u.x, y: u.y - 34, text: base.skillName.toUpperCase() + '!', color: '#f472b6', life: 1.4 });
 
-        if (u.unitId === 'aurelia' || u.unitId === 'aethelgard') {
-          const bonus = u.unitId === 'aethelgard' ? 250 : 180;
+        // Instant Gold Generation Skills for Economy & Starlight Units
+        const skillGoldMap = {
+          aurelia: 180,
+          aethelgard: 250,
+          lycoris: 280,
+          midas: 500,
+          fortuna: 950,
+          mammon: 1800
+        };
+        if (skillGoldMap[u.unitId]) {
+          const bonus = Math.round(skillGoldMap[u.unitId] * (1 + (u.tier - 1) * 0.25));
           this.mana += bonus;
-          this.floatingTexts.push({ x: u.x, y: u.y - 52, text: `+${bonus} ¥ STARLIGHT BOUNTY`, color: '#fde047', life: 1.3 });
+          u.totalGoldGenerated = (u.totalGoldGenerated || 0) + bonus;
+          this.floatingTexts.push({ x: u.x, y: u.y - 52, text: `+${bonus} ¥ TREASURY SKILL!`, color: '#fde047', life: 1.4 });
         }
 
         // Cleanse ally stuns if Seraphina or Akatsuki
@@ -4173,7 +4474,7 @@
         const mult = u.rarity === 'Secret' ? 5.5 : 3.8;
         const inRange = this.enemies.filter(e => Math.hypot(e.x - u.x, e.y - u.y) <= u.range * 1.2);
         inRange.forEach(e => {
-        if (u.unitId === 'kaelen' || u.unitId === 'aethelgard' || u.unitId === 'gilgamesh') {
+          if (u.unitId === 'kaelen' || u.unitId === 'aethelgard' || u.unitId === 'gilgamesh' || u.unitId === 'mammon') {
             e.shield = 0;
             e.armorShred = Math.max(e.armorShred || 0, 0.50);
           }
@@ -4278,84 +4579,7 @@
 
         el.innerHTML = `
           <div class="flex items-center justify-between border-b border-slate-800 pb-2">
-            <div class="flex items-center gap-2.5">
-              <div class="w-11 h-11 rounded overflow-hidden border border-cyan-400 relative">
-                ${ArtEngine.getCharacterPortraitSvg(u.unitId, u.evolved)}
-                <span class="absolute bottom-0 right-0 w-4 h-4">${ArtEngine.getElementSvg(u.element)}</span>
-              </div>
-              <div>
-                <div class="font-display font-bold text-xs text-white">${u.name}</div>
-                <div class="text-[10px] font-tech text-fuchsia-300">Lv.${u.tier}/5 • ${u.element} • ${u.trait.name}</div>
-              </div>
-            </div>
-            <button onclick="BattleEngine.selectPlacedUnit(null)" class="text-xs font-tech text-slate-400 hover:text-white">[X]</button>
-          </div>
-
-          <div class="p-2 rounded bg-slate-950/90 border border-slate-800 mt-2 text-[10px]">
-            <strong class="text-amber-300">Passive [${base.passiveName}]:</strong>
-            <span class="text-slate-300">${base.passiveDesc}</span>
-          </div>
-
-          <div class="grid grid-cols-3 gap-1.5 text-center text-[11px] font-tech my-2">
-            <div class="p-1.5 rounded bg-slate-900">DMG<br><strong class="text-amber-300">${u.dmg}</strong></div>
-            <div class="p-1.5 rounded bg-slate-900">RNG<br><strong class="text-cyan-300">${u.range}</strong></div>
-            <div class="p-1.5 rounded bg-slate-900">SPA<br><strong class="text-emerald-300">${u.spa}s</strong></div>
-          </div>
-
-          <div class="flex items-center justify-between text-[11px] font-tech text-slate-300 mb-2">
-            <span>Total DMG: <strong class="text-amber-300">${u.totalDamageDealt.toLocaleString()}</strong></span>
-            <button onclick="BattleEngine.cycleTargeting('${u.id}')" class="px-2 py-0.5 rounded bg-cyan-950 border border-cyan-500/40 text-cyan-300">
-              Target: ${u.targeting}
-            </button>
-          </div>
-
-          <div class="space-y-1.5">
-            ${u.tier < 5 ? `
-              <button onclick="BattleEngine.upgradePlacedUnit('${u.id}')" class="clip-btn w-full py-2 bg-gradient-to-r from-amber-500 to-orange-600 text-slate-950 font-tech font-bold text-xs">
-                UPGRADE LV.${u.tier + 1} (${upgCost} ¥)
-              </button>
-            ` : `
-              <div class="w-full py-1.5 text-center rounded bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 font-tech text-xs font-bold">
-                MAX LEVEL 5 AWAKENED
-              </div>
-            `}
-
-            <button onclick="BattleEngine.castActiveSkill('${u.id}')" ${u.skillCooldown > 0 || u.stunTimer > 0 ? 'disabled' : ''} class="clip-btn w-full py-2 bg-gradient-to-r from-fuchsia-600 to-purple-700 disabled:opacity-40 text-white font-tech font-bold text-xs">
-              ${u.stunTimer > 0 ? `STUNNED (${u.stunTimer.toFixed(1)}s)` : u.skillCooldown > 0 ? `SKILL COOLDOWN (${Math.ceil(u.skillCooldown)}s)` : `SKILL: ${base.skillName}`}
-            </button>
-
-            <button onclick="BattleEngine.sellPlacedUnit('${u.id}')" class="w-full py-1.5 rounded bg-rose-950/80 hover:bg-rose-800 text-rose-200 font-tech text-[11px]">
-              SELL UNIT (+${refund} ¥)
-            </button>
-          </div>
-        `;
-      },
-
-      renderSquadDock() {
-        const dock = document.getElementById('battleSquadDock');
-        if (!dock) return;
-        const equipped = GameStore.state.units.filter(u => u.equipped).slice(0, 6);
-        dock.innerHTML = equipped.map((u, idx) => {
-          const stats = GameStore.getUnitCombatStats(u);
-          const count = this.placedUnits.filter(p => p.squadInstanceId === u.instanceId).length;
-          const maxCount = stats.trait.isUnique ? 1 : (stats.base.rarity === 'Secret' ? 2 : 3);
-          const canAfford = this.mana >= stats.base.cost && count < maxCount && this.placedUnits.length < this.maxTotalPlacedUnits;
-          return `
-            <button onclick="BattleEngine.beginPlacement('${u.instanceId}')" class="relative w-16 sm:w-20 p-1.5 rounded-lg bg-slate-950/90 border-2 ${canAfford ? 'border-cyan-400 hover:-translate-y-1' : 'border-slate-700 opacity-60'} transition flex flex-col items-center" title="Hotkey [${idx + 1}]">
-              <span class="absolute top-1 left-1 w-3.5 h-3.5">${ArtEngine.getElementSvg(stats.base.element)}</span>
-              <span class="absolute bottom-5 left-1 px-1 rounded bg-slate-900/90 border border-slate-700 text-[7px] font-tech text-cyan-200">[${idx + 1}]</span>
-              <div class="w-11 h-11 sm:w-12 sm:h-12 rounded overflow-hidden">
-                ${ArtEngine.getCharacterPortraitSvg(u.unitId, u.evolved)}
-              </div>
-              <span class="text-[9px] font-tech font-bold text-amber-300 mt-1">${stats.base.cost} ¥</span>
-              <span class="absolute top-1 right-1 px-1 rounded bg-black/80 text-[8px] font-tech text-cyan-300">${count}/${maxCount}</span>
-              <span class="absolute bottom-5 right-1 px-1 rounded bg-black/80 text-[7px] font-tech text-slate-300">${stats.base.placementType[0]}</span>
-            </button>
-          `;
-        }).join('');
-      },
-
-      // Steeper Tactical Wave Scaling + Elemental Affinities + Shielded / Armored / Regenerator / Disruptor Traits
+      // Steeper Tactical Wave Scaling + Higher Enemy Density + 9 Diverse Archetypes (Healer, Shielder, Grow HP, Splitter, Berserker, Blinker, Armored, Regen)
       prepareWave(waveNum) {
         this.wave = waveNum;
         this.waveState = 'spawning';
@@ -4363,49 +4587,111 @@
 
         const mapIdx = MAP_DATABASE.findIndex(m => m.id === this.currentMap.id) + 1;
         const dCfg = this.difficultyConfig[this.difficulty] || this.difficultyConfig.normal;
+        const liveRealm = this.realmLiveState || RealmRotationSystem.getRealmLiveState(this.currentMap.id);
 
-        // Rotate dominant wave element so player must use Elemental Counters
+        // Dominant Wave Element follows the Realm's Real-Time Rotating Element on most waves, with secondary mix
         const elemCycle = ELEMENT_SYSTEM.order;
-        this.currentWaveElement = elemCycle[(waveNum + mapIdx - 2) % elemCycle.length];
+        this.currentWaveElement = (waveNum % 3 === 1)
+          ? liveRealm.dominantElement
+          : elemCycle[(elemCycle.indexOf(liveRealm.dominantElement) + waveNum) % elemCycle.length];
 
-        // Steeper HP curve
-        const baseHp = Math.round(280 * Math.pow(1.46, waveNum - 1) * (0.9 + mapIdx * 0.35) * dCfg.hpMult);
-        const count = 8 + waveNum * 2;
+        // Steeper HP curve & Significantly Increased Enemy Count (+60% more enemies per wave!)
+        const baseHp = Math.round(295 * Math.pow(1.47, waveNum - 1) * (0.9 + mapIdx * 0.35) * dCfg.hpMult);
+        const swarmBonus = liveRealm.mutator.id === 'hydra_swarm' ? 1.25 : 1.0;
+        const count = Math.round((14 + waveNum * 3) * swarmBonus);
+
+        const archetypes = ['STALKER', 'HEALER', 'SHIELDER', 'GROW_HP', 'ARMORED', 'REGEN', 'SPLITTER', 'BERSERKER', 'BLINKER'];
 
         for (let i = 0; i < count; i++) {
+          let arch = archetypes[(i + waveNum) % archetypes.length];
+          // Bias toward the Real-Time Mutator's featured enemy types
+          if (i % 3 === 0 && liveRealm.mutator.focusArchetypes?.length) {
+            arch = liveRealm.mutator.focusArchetypes[i % liveRealm.mutator.focusArchetypes.length];
+          }
+          if (waveNum === 1 && i < 5) arch = 'STALKER';
+
           let type = 'Vanguard Stalker';
-          let speed = 66 * dCfg.speedMult;
+          let traitTag = '';
+          let speed = 68 * dCfg.speedMult;
           let hp = baseHp;
           let shield = 0;
-          let armor = 0.10;
+          let armor = 0.12;
           let regenRate = 0;
           let radius = 13;
-          let traitTag = '';
+          let healAura = false;
+          let shieldAura = false;
+          let growHpRate = 0;
+          let isSplitter = false;
+          let isBerserker = false;
+          let isBlinker = false;
+
           const elem = (i % 4 === 0) ? elemCycle[(waveNum + i) % elemCycle.length] : this.currentWaveElement;
           let color = ELEMENT_SYSTEM.colors[elem] || '#ef4444';
 
-          // Tactical Enemy Archetypes
-          if (waveNum >= 2 && i % 4 === 1) {
+          if (arch === 'HEALER') {
+            type = 'Sanctum High Healer';
+            traitTag = 'HEALER';
+            speed = 54 * dCfg.speedMult;
+            hp = Math.round(baseHp * 1.45);
+            healAura = true; // Pulses AoE 12% Max HP heal to nearby enemies every 2.6s
+            radius = 15;
+            color = '#4ade80';
+          } else if (arch === 'SHIELDER') {
+            type = 'Aegis Barrier Weaver';
+            traitTag = 'SHIELDER';
+            speed = 55 * dCfg.speedMult;
+            hp = Math.round(baseHp * 1.55);
+            shield = Math.round(baseHp * (this.difficulty === 'hell' ? 1.15 : 0.80));
+            shieldAura = true; // Grants +25% MaxHP Shield to nearby allies every 3.2s
+            radius = 15;
+            color = '#38bdf8';
+          } else if (arch === 'GROW_HP') {
+            type = 'Abyssal Behemoth';
+            traitTag = 'GROW HP';
+            speed = 48 * dCfg.speedMult;
+            hp = Math.round(baseHp * 1.65);
+            growHpRate = 0.08; // Grows +8% Max HP & current HP per second and expands in size!
+            armor = 0.25;
+            radius = 16;
+            color = '#c084fc';
+          } else if (arch === 'ARMORED') {
             type = 'Armored Juggernaut';
             traitTag = 'ARMORED';
             speed = 46 * dCfg.speedMult;
-            hp = Math.round(baseHp * 2.3);
-            armor = 0.45; // 45% Physical Damage Reduction unless shredded!
+            hp = Math.round(baseHp * 2.35);
+            armor = 0.48; // 48% Physical Damage Reduction unless shredded!
             radius = 16;
-          } else if (waveNum >= 3 && i % 4 === 2) {
-            type = 'Aegis Shieldbearer';
-            traitTag = 'SHIELDED';
-            speed = 55 * dCfg.speedMult;
-            hp = Math.round(baseHp * 1.45);
-            shield = Math.round(baseHp * (this.difficulty === 'hell' ? 1.1 : 0.75));
-            radius = 15;
-          } else if (waveNum >= 4 && i % 5 === 3) {
+          } else if (arch === 'REGEN') {
             type = 'Hydra Regenerator';
             traitTag = 'REGEN';
             speed = 58 * dCfg.speedMult;
             hp = Math.round(baseHp * 1.75);
-            regenRate = 0.035; // Heals 3.5% Max HP/s unless Scorched by Pyro!
+            regenRate = 0.04; // Heals 4.0% Max HP/s unless Scorched by Pyro!
             radius = 15;
+          } else if (arch === 'SPLITTER') {
+            type = 'Mitosis Chimera';
+            traitTag = 'SPLITTER';
+            speed = 62 * dCfg.speedMult;
+            hp = Math.round(baseHp * 1.40);
+            isSplitter = true; // Spawns 2 fast Mini-Chimeras upon death!
+            radius = 15;
+            color = '#fb923c';
+          } else if (arch === 'BERSERKER') {
+            type = 'Bloodrage Zealot';
+            traitTag = 'BERSERK';
+            speed = 64 * dCfg.speedMult;
+            hp = Math.round(baseHp * 1.60);
+            isBerserker = true; // Gains +85% movement speed & +25% Armor below 50% HP!
+            radius = 14;
+            color = '#f43f5e';
+          } else if (arch === 'BLINKER') {
+            type = 'Void Phase Stalker';
+            traitTag = 'BLINK';
+            speed = 70 * dCfg.speedMult;
+            hp = Math.round(baseHp * 1.25);
+            isBlinker = true; // Teleports forward along path every 4.2s unless frozen!
+            radius = 13;
+            color = '#a855f7';
           }
 
           this.spawnQueue.push({
@@ -4415,47 +4701,62 @@
             hp,
             maxHp: hp,
             shield,
-            maxShield: shield,
+            maxShield: Math.max(shield, Math.round(hp * 0.5)),
             speed,
+            baseSpeed: speed,
             armor,
             armorShred: 0,
             regenRate,
+            healAura,
+            shieldAura,
+            growHpRate,
+            growStacks: 0,
+            isSplitter,
+            isBerserker,
+            isBlinker,
+            auraTimer: 2.0 + Math.random() * 1.5,
             radius,
             color,
             isBoss: false,
-            bounty: Math.round((24 + waveNum * 4) * (this.difficulty === 'hell' ? 0.85 : 1.0))
+            bounty: Math.round((20 + waveNum * 3.5) * (this.difficulty === 'hell' ? 0.85 : 1.0))
           });
         }
 
         // Boss spawns on Wave 6, Wave 12, and every 6 waves in Infinite Mode!
         if (waveNum % 6 === 0 || waveNum === this.maxWaves) {
           const isMajorBoss = (waveNum % 12 === 0) || (waveNum === this.maxWaves);
-          const bossMult = isMajorBoss ? 18 : 8.5;
+          const bossMult = isMajorBoss ? 20 : 9.5;
           const bossHp = Math.round(baseHp * bossMult);
-          const bossShield = Math.round(bossHp * 0.35);
+          const bossShield = Math.round(bossHp * 0.40);
 
           this.spawnQueue.push({
             name: isMajorBoss ? `${this.currentMap.bossName} (W${waveNum})` : `Abyssal Gatekeeper (Wave ${waveNum})`,
-            traitTag: 'BOSS • DISRUPTOR',
+            traitTag: 'BOSS • GROW+SHIELD+STUN',
             element: this.currentWaveElement,
             hp: bossHp,
             maxHp: bossHp,
             shield: bossShield,
             maxShield: bossShield,
             speed: 38 * dCfg.speedMult,
-            armor: 0.40,
+            baseSpeed: 38 * dCfg.speedMult,
+            armor: 0.42,
             armorShred: 0,
             regenRate: 0.015,
+            healAura: true,
+            shieldAura: true,
+            growHpRate: 0.03,
+            growStacks: 0,
+            auraTimer: 3.0,
             radius: isMajorBoss ? 26 : 21,
             color: '#ff2a5f',
             isBoss: true,
             phase: 1,
-            roarCooldown: 7.0,
-            bounty: isMajorBoss ? 1200 : 450
+            roarCooldown: 6.8,
+            bounty: isMajorBoss ? 1400 : 500
           });
         }
 
-        this.spawnTimer = 0.5;
+        this.spawnTimer = 0.35;
         document.getElementById('btnNextWavePrompt').classList.add('hidden');
         this.updateBattleHud();
       },
@@ -4486,71 +4787,7 @@
 
       toggleAutoWave() {
         this.autoWave = !this.autoWave;
-        const btn = document.getElementById('btnAutoWave');
-        btn.textContent = `AUTO WAVE: ${this.autoWave ? 'ON' : 'OFF'}`;
-      },
-
-      toggleAutoSkill() {
-        this.autoSkill = !this.autoSkill;
-        const btn = document.getElementById('btnAutoSkill');
-        if (btn) {
-          btn.textContent = `AUTO SKILL: ${this.autoSkill ? 'ON' : 'OFF'}`;
-          btn.className = this.autoSkill
-            ? 'clip-btn px-2.5 py-1 bg-fuchsia-600 text-white border border-fuchsia-300 font-tech font-bold text-xs shadow'
-            : 'clip-btn px-2.5 py-1 bg-fuchsia-600/30 border border-fuchsia-400/50 text-fuchsia-200 font-tech font-bold text-xs';
-        }
-        UI.toast(`Auto-Cast Ultimate Skills: ${this.autoSkill ? 'ON' : 'OFF'}`, this.autoSkill ? 'emerald' : 'cyan');
-      },
-
-      updateBattleHud() {
-        const dCfg = this.difficultyConfig[this.difficulty] || this.difficultyConfig.normal;
-        document.getElementById('battleMapTitle').textContent = this.currentMap.name;
-        const diffBadge = document.getElementById('battleDiffBadge');
-        if (diffBadge) diffBadge.textContent = dCfg.name;
-
-        document.getElementById('battleWaveNum').textContent = this.wave;
-        document.getElementById('battleWaveMax').textContent = dCfg.isInfinite ? '∞' : this.maxWaves;
-
-        const elemBadge = document.getElementById('battleWaveElemBadge');
-        if (elemBadge && this.currentWaveElement) {
-          elemBadge.innerHTML = `<span class="w-3.5 h-3.5 inline-block">${ArtEngine.getElementSvg(this.currentWaveElement)}</span> <span style="color:${ELEMENT_SYSTEM.colors[this.currentWaveElement]}">${this.currentWaveElement.toUpperCase()} WAVE</span>`;
-        }
-
-        document.getElementById('battleBaseHpText').textContent = `${this.nexusHp} / ${this.maxNexusHp}`;
-        document.getElementById('battleBaseHpFill').style.width = `${Math.max(0, (this.nexusHp / this.maxNexusHp) * 100)}%`;
-        document.getElementById('battleManaText').textContent = `${this.mana} ¥`;
-
-        // Check Boss HUD
-        const boss = this.enemies.find(e => e.isBoss);
-        const bossBar = document.getElementById('bossHudBar');
-        if (boss) {
-          bossBar.classList.remove('hidden');
-          document.getElementById('bossNameText').textContent = `${boss.name} [${boss.element}]`;
-          document.getElementById('bossPhaseBadge').textContent = boss.phase === 2 ? 'PHASE II • RAGE & STUN ROAR' : 'PHASE I';
-          document.getElementById('bossHpNumbers').textContent = `${Math.max(0, Math.round(boss.hp)).toLocaleString()} / ${boss.maxHp.toLocaleString()}${boss.shield > 0 ? ` (+${Math.round(boss.shield)} SHIELD)` : ''}`;
-          document.getElementById('bossHpFill').style.width = `${Math.max(0, (boss.hp / boss.maxHp) * 100)}%`;
-        } else {
-          bossBar.classList.add('hidden');
-        }
-      },
-
-      // Main 60FPS Game Loop
-      loop(timestamp) {
-        if (!this.active) return;
-        const rawDt = Math.min(0.1, (timestamp - this.lastTime) / 1000);
-        this.lastTime = timestamp;
-        const dt = rawDt * this.gameSpeed;
-
-        this.update(dt);
-        this.draw();
-
-        this.animId = requestAnimationFrame((t) => this.loop(t));
-      },
-
-      update(dt) {
-        const wps = this.currentMap.waypoints;
-
-        // 1. Wave Spawning
+        // 1. Wave Spawning (Faster interval for larger swarm density)
         if (this.waveState === 'spawning') {
           this.spawnTimer -= dt;
           if (this.spawnTimer <= 0 && this.spawnQueue.length > 0) {
@@ -4568,24 +4805,88 @@
               burnTimer: 0,
               burnDmg: 0
             });
-            this.spawnTimer = 0.82;
+            this.spawnTimer = 0.48;
           }
           if (this.spawnQueue.length === 0) {
             this.waveState = 'clearing';
           }
         }
 
-        // 2. Update Enemies (Scorch DoT, Regeneration, Boss Disruptor Stun Roar & Phase II Escorts)
+        // 2. Update Enemies (Healer Aura, Shielder Aura, Grow HP Behemoth, Berserker, Blinker, Scorch DoT & Boss)
         for (let i = this.enemies.length - 1; i >= 0; i--) {
           const e = this.enemies[i];
 
-          // Scorch / Burn DoT (Stops Regeneration!)
+          // Scorch / Burn DoT (Stops Regeneration & Halves Grow HP!)
           if (e.burnTimer > 0) {
             e.burnTimer -= dt;
             e.hp -= e.burnDmg * dt;
           } else if (e.regenRate > 0 && e.hp > 0 && e.hp < e.maxHp) {
             // Regenerator Trait heals when NOT burning!
             e.hp = Math.min(e.maxHp, e.hp + e.maxHp * e.regenRate * dt);
+          }
+
+          // GROW HP Archetype: Continuously increases Max HP & Current HP and visually grows larger!
+          if (e.growHpRate > 0 && e.hp > 0 && (e.growStacks || 0) < 18) {
+            const effGrow = e.burnTimer > 0 ? e.growHpRate * 0.35 : e.growHpRate;
+            const addedHp = e.maxHp * effGrow * dt;
+            e.maxHp = Math.round(e.maxHp + addedHp);
+            e.hp = Math.min(e.maxHp, e.hp + addedHp);
+            e.growStacks = (e.growStacks || 0) + dt;
+            if (!e.isBoss) {
+              e.radius = Math.min(24, 16 + Math.floor(e.growStacks * 0.45));
+            }
+          }
+
+          // BERSERKER Archetype: Below 50% HP, surges speed +85% and armor +15%
+          if (e.isBerserker && e.hp > 0 && e.hp <= e.maxHp * 0.5 && !e.berserkTriggered) {
+            e.berserkTriggered = true;
+            e.speed = (e.baseSpeed || e.speed) * 1.85;
+            e.armor = Math.min(0.65, (e.armor || 0.15) + 0.15);
+            this.floatingTexts.push({ x: e.x, y: e.y - 24, text: 'BERSERK RAGE!', color: '#f43f5e', life: 0.9 });
+          }
+
+          // HEALER, SHIELDER & BLINKER Periodic Active Abilities
+          if (e.hp > 0 && (e.healAura || e.shieldAura || e.isBlinker)) {
+            e.auraTimer = (e.auraTimer || 2.8) - dt;
+            if (e.auraTimer <= 0) {
+              e.auraTimer = 2.8;
+              if (e.healAura) {
+                this.shockwaves.push({ x: e.x, y: e.y, r: 8, maxR: 115, color: '#4ade80', alpha: 0.75 });
+                this.enemies.forEach(ally => {
+                  if (ally.hp > 0 && Math.hypot(ally.x - e.x, ally.y - e.y) <= 115) {
+                    const healAmt = Math.round(ally.maxHp * (ally.burnTimer > 0 ? 0.03 : 0.12));
+                    ally.hp = Math.min(ally.maxHp, ally.hp + healAmt);
+                  }
+                });
+                this.floatingTexts.push({ x: e.x, y: e.y - 22, text: '+AURA HEAL', color: '#4ade80', life: 0.75 });
+              }
+              if (e.shieldAura) {
+                this.shockwaves.push({ x: e.x, y: e.y, r: 8, maxR: 120, color: '#38bdf8', alpha: 0.75 });
+                this.enemies.forEach(ally => {
+                  if (ally.hp > 0 && Math.hypot(ally.x - e.x, ally.y - e.y) <= 120) {
+                    const addSh = Math.round(ally.maxHp * 0.22);
+                    ally.maxShield = Math.max(ally.maxShield || addSh, addSh * 2);
+                    ally.shield = Math.min(ally.maxShield, (ally.shield || 0) + addSh);
+                  }
+                });
+                this.floatingTexts.push({ x: e.x, y: e.y - 22, text: '+SHIELD PULSE', color: '#38bdf8', life: 0.75 });
+              }
+              if (e.isBlinker && e.freezeTimer <= 0) {
+                const targetWp = wps[e.wpIndex];
+                if (targetWp) {
+                  const dx = targetWp.x - e.x;
+                  const dy = targetWp.y - e.y;
+                  const d = Math.hypot(dx, dy);
+                  const jump = Math.min(d, 55);
+                  if (jump > 10) {
+                    e.x += (dx / d) * jump;
+                    e.y += (dy / d) * jump;
+                    e.distanceTraveled += jump;
+                    this.floatingTexts.push({ x: e.x, y: e.y - 18, text: 'BLINK!', color: '#c084fc', life: 0.65 });
+                  }
+                }
+              }
+            }
           }
 
           if (e.frostbiteTimer > 0) e.frostbiteTimer -= dt;
@@ -4701,12 +5002,32 @@
         // 3. Check Wave Clear
         if (this.waveState === 'clearing' && this.enemies.length === 0) {
           GameStore.state.player.totalWavesCleared++;
-          // Calculate Wave Clear Gold + Aurelia Golden Covenant (+120/unit) + Aethelgard (+180/unit)
-          let waveBonus = 115 + this.wave * 22;
+          // Calculate Base Wave Clear Gold + Economy Units Wave Bounty + Compound Interest (Fortuna 8% / Mammon 12%)
+          let waveBonus = 115 + this.wave * 24;
+          let totalInterestRate = 0;
+
           this.placedUnits.forEach(u => {
-            if (u.waveBountyBonus) waveBonus += u.waveBountyBonus;
-            if (u.trait.goldMult) waveBonus = Math.round(waveBonus * u.trait.goldMult);
+            if (u.waveBountyBonus) {
+              // Economy units scale their wave gold generation by +35% per in-battle upgrade tier!
+              const tierEconMult = 1 + (u.tier - 1) * 0.35;
+              const unitGold = Math.round(u.waveBountyBonus * tierEconMult);
+              waveBonus += unitGold;
+              u.totalGoldGenerated = (u.totalGoldGenerated || 0) + unitGold;
+            }
+            if (u.interestRate) {
+              totalInterestRate += u.interestRate;
+            }
+            if (u.trait.goldMult) {
+              waveBonus = Math.round(waveBonus * u.trait.goldMult);
+            }
           });
+
+          // Apply Compound Interest from Fortuna / Mammon (capped at +2,500 ¥ interest per wave for balance)
+          if (totalInterestRate > 0) {
+            const interestBonus = Math.min(2500, Math.round(this.mana * totalInterestRate));
+            waveBonus += interestBonus;
+          }
+
           this.mana += waveBonus;
 
           // Milestone reward every 5 waves in Infinite Mode
@@ -4853,17 +5174,17 @@
           speed: 580,
           color: isSecretCollapse ? '#ff2a5f' : (ELEMENT_SYSTEM.colors[u.element] || '#38bdf8'),
           isSecretCollapse
-        });
-      },
-
-      // Active Combat Calculation: Elemental Counter + Unique Character Passives + Traits + Shield/Armor
+      // Active Combat Calculation: Elemental Counter + Unique Character Passives + Economy Gold-On-Hit + Traits + Shield/Armor
       onProjectileImpact(p) {
         const u = p.unit;
         SoundFX.play('hit');
 
-        // Aurelia Passive [Golden Covenant]: +35% bonus Aether on hit (~12 ¥ per attack)
-        if (u.unitId === 'aurelia') {
-          this.mana += 10;
+        // Economy Units & Aurelia On-Hit Aether Gold Generation (scales with upgrade tier!)
+        if (u.unitId === 'aurelia' || u.hitGoldBonus > 0) {
+          const baseHitGold = u.hitGoldBonus || 12;
+          const gainedGold = Math.round(baseHitGold * (1 + (u.tier - 1) * 0.25));
+          this.mana += gainedGold;
+          u.totalGoldGenerated = (u.totalGoldGenerated || 0) + gainedGold;
         }
 
         // Lyra Passive [Tempest Gale]: Every 3rd attack gains +8% Crit Rate (up to +40%)
@@ -5045,6 +5366,43 @@
       onEnemyKilled(e) {
         let bounty = e.bounty || 35;
         this.mana += bounty;
+
+        // SPLITTER Archetype: Spawns 2 fast Mini-Chimeras at the death location!
+        if (e.isSplitter && !e.isMiniSplit) {
+          for (let s = 0; s < 2; s++) {
+            const miniHp = Math.max(40, Math.round(e.maxHp * 0.32));
+            this.enemies.push({
+              id: 'en_split_' + Date.now() + '_' + Math.random(),
+              name: 'Mini Chimera',
+              traitTag: 'SPLITLING',
+              element: e.element,
+              x: e.x + (s === 0 ? -14 : 14),
+              y: e.y + (s === 0 ? -8 : 8),
+              wpIndex: e.wpIndex,
+              distanceTraveled: e.distanceTraveled,
+              hp: miniHp,
+              maxHp: miniHp,
+              shield: 0,
+              maxShield: 0,
+              speed: (e.baseSpeed || e.speed) * 1.35,
+              baseSpeed: (e.baseSpeed || e.speed) * 1.35,
+              armor: 0.05,
+              armorShred: 0,
+              regenRate: 0,
+              radius: 10,
+              color: '#fdba74',
+              isBoss: false,
+              isMiniSplit: true,
+              bounty: Math.round(bounty * 0.35),
+              slowTimer: 0,
+              freezeTimer: 0,
+              burnTimer: 0,
+              burnDmg: 0
+            });
+          }
+          this.floatingTexts.push({ x: e.x, y: e.y - 20, text: 'SPLIT x2!', color: '#fb923c', life: 0.85 });
+        }
+
         const squadInst = GameStore.state.units.find(u => u.instanceId);
         if (squadInst) squadInst.kills = (squadInst.kills || 0) + 1;
         this.renderSquadDock();
@@ -5439,6 +5797,49 @@
         this.initLobbyBgCanvas();
         BattleEngine.initCanvas();
         this.refreshAll();
+
+        // Mobile Portrait Orientation Detector & Real-Time Realm Rotation Ticker
+        this.checkMobileOrientation();
+        window.addEventListener('resize', () => this.checkMobileOrientation());
+        setInterval(() => {
+          const timerEl = document.getElementById('realmRotationCountdown');
+          if (timerEl) {
+            timerEl.textContent = `Resets in: ${RealmRotationSystem.getRemainingTimeFormatted()}`;
+          }
+        }, 1000);
+      },
+
+      dismissedRotateBanner: false,
+
+      checkMobileOrientation() {
+        const banner = document.getElementById('mobileRotateBanner');
+        if (!banner || this.dismissedRotateBanner) return;
+        const isPortraitMobile = window.innerWidth < 768 && window.innerHeight > window.innerWidth;
+        banner.classList.toggle('hidden', !isPortraitMobile);
+      },
+
+      async lockLandscapeMode() {
+        SoundFX.play('click');
+        try {
+          if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+            await document.documentElement.requestFullscreen();
+          }
+          if (screen.orientation && screen.orientation.lock) {
+            await screen.orientation.lock('landscape');
+            this.toast('Đã khóa chế độ Màn Hình Ngang (Landscape Mode) cho Mobile!', 'emerald');
+          } else {
+            this.toast('Đã bật Toàn Màn Hình! Hãy xoay ngang điện thoại để trải nghiệm tốt nhất.', 'cyan');
+          }
+        } catch (e) {
+          this.toast('Hãy xoay ngang điện thoại của bạn để kích hoạt giao diện Landscape.', 'cyan');
+        }
+        const banner = document.getElementById('mobileRotateBanner');
+        if (banner) banner.classList.add('hidden');
+        setTimeout(() => BattleEngine.resize(), 250);
+      },
+
+      toggleFullscreen() {
+        this.lockLandscapeMode();
       },
 
       toggleFullscreen() {
@@ -5811,112 +6212,70 @@
             this.toast('Battle Squad is full (6/6)! Unequip a unit first.', 'rose');
             return;
           }
-          u.equipped = true;
-        } else {
-          u.equipped = false;
+      // Quick-Equip Recommended Counter Element + Economy Gold Buff Squad for a specific Realm!
+      equipRecommendedForRealm(recElement, mapId = null) {
+        SoundFX.play('upgrade');
+        const all = [...GameStore.state.units];
+        if (all.length === 0) return;
+
+        const rarityRank = { Secret: 5, Mythic: 4, Legendary: 3, Epic: 2, Rare: 1 };
+        all.forEach(u => { u.equipped = false; });
+
+        const selected = [];
+        const usedUnitIds = new Set();
+
+        // 1. Pick strongest Economy / Gold-Buff unit first (Mammon, Fortuna, Midas, Lycoris, Aurelia)
+        const econUnits = all.filter(u => UNIT_DATABASE[u.unitId]?.isEconomyUnit || UNIT_DATABASE[u.unitId]?.waveBountyBonus)
+          .sort((a, b) => GameStore.getUnitCombatStats(b).dps - GameStore.getUnitCombatStats(a).dps);
+        if (econUnits.length > 0) {
+          econUnits[0].equipped = true;
+          selected.push(econUnits[0]);
+          usedUnitIds.add(econUnits[0].unitId);
         }
-        SoundFX.play('click');
-        SaveSystem.save();
-        this.renderInventory();
-        this.renderLobbySquad();
-      },
 
-      toggleLockUnit(instanceId) {
-        const u = GameStore.state.units.find(x => x.instanceId === instanceId);
-        if (!u) return;
-        u.locked = !u.locked;
-        SoundFX.play('click');
-        SaveSystem.save();
-        this.renderInventoryInspector();
-      },
-
-      renderInventoryInspector() {
-        const el = document.getElementById('inventoryInspector');
-        if (!el) return;
-        const u = GameStore.state.units.find(x => x.instanceId === this.selectedInvId) || GameStore.state.units[0];
-        if (!u) return;
-        const stats = GameStore.getUnitCombatStats(u);
-        const sellVal = GameStore.getUnitSellValue(stats.base.rarity);
-
-        el.innerHTML = `
-          <div class="flex flex-col items-center text-center">
-            <div class="w-28 h-28 rounded-2xl overflow-hidden border-2 border-cyan-400 shadow-xl relative">
-              ${ArtEngine.getCharacterPortraitSvg(u.unitId, u.evolved)}
-              <span class="absolute bottom-1 right-1 w-6 h-6 bg-slate-950/80 rounded-full p-0.5">${ArtEngine.getElementSvg(stats.base.element)}</span>
-            </div>
-            <div class="flex items-center gap-2 mt-2">
-              <span class="px-2 py-0.5 rounded text-[10px] font-tech font-bold rarity-${stats.base.rarity.toLowerCase()} bg-slate-900">${stats.base.rarity}</span>
-              <span class="px-2 py-0.5 rounded text-[10px] font-tech font-bold bg-slate-900" style="color:${ELEMENT_SYSTEM.colors[stats.base.element]}">${ELEMENT_SYSTEM.names[stats.base.element]}</span>
-              <span class="px-2 py-0.5 rounded text-[10px] font-tech font-bold bg-slate-900 text-amber-300">${stats.base.placementType}</span>
-            </div>
-            <h3 class="font-display font-bold text-base sm:text-lg text-white mt-1">${stats.displayName}</h3>
-
-            <!-- Unique Combat Passive Box -->
-            <div class="w-full text-left p-2.5 rounded bg-slate-950/95 border border-amber-500/40 mt-2.5 text-[11px]">
-              <div class="font-tech font-bold text-amber-300 uppercase">Unique Passive: ${stats.base.passiveName}</div>
-              <div class="text-slate-300 mt-0.5">${stats.base.passiveDesc}</div>
-            </div>
-
-            <!-- Active Trait Box -->
-            <div class="w-full p-2.5 rounded bg-slate-950/90 border border-fuchsia-500/40 mt-2 text-left flex items-center gap-2.5">
-              <div class="w-8 h-8 flex-shrink-0">${ArtEngine.getTraitRuneSvg(stats.trait.rarity, stats.trait.isSecret)}</div>
-              <div>
-                <div class="text-xs font-bold text-fuchsia-300">${stats.trait.name} (${stats.trait.rarity})</div>
-                <div class="text-[10px] text-slate-300">${stats.trait.desc}</div>
-              </div>
-            </div>
-
-            <!-- Stats Grid -->
-            <div class="w-full grid grid-cols-3 gap-1.5 text-center text-[11px] font-tech mt-2.5 p-2.5 rounded bg-slate-950/80 border border-slate-800">
-              <div>DMG: <strong class="text-amber-300">${stats.dmg}</strong></div>
-              <div>RNG: <strong class="text-cyan-300">${stats.range}</strong></div>
-              <div>SPA: <strong class="text-emerald-300">${stats.spa}s</strong></div>
-              <div>CRIT: <strong class="text-rose-300">${Math.round(stats.critRate * 100)}%</strong></div>
-              <div>COST: <strong class="text-amber-300">${stats.base.cost} ¥</strong></div>
-              <div>DPS: <strong class="text-white">${stats.dps}</strong></div>
-            </div>
-
-            <div class="w-full text-left p-2 rounded bg-slate-900/70 border border-slate-800 mt-2 text-[11px]">
-              <strong class="text-cyan-300">Active Skill [${stats.base.skillName}]:</strong>
-              <span class="text-slate-300">${stats.base.skillDesc}</span>
-            </div>
-
-            <!-- Actions -->
-            <div class="w-full grid grid-cols-2 gap-2 mt-3">
-              <button onclick="UI.toggleEquipUnit('${u.instanceId}')" class="clip-btn py-2 ${u.equipped ? 'bg-rose-600 text-white' : 'bg-emerald-500 text-slate-950'} font-tech font-bold text-xs">
-                ${u.equipped ? 'UNEQUIP' : 'EQUIP TO SQUAD'}
-              </button>
-              <button onclick="UI.toggleLockUnit('${u.instanceId}')" class="clip-btn py-2 bg-slate-800 text-slate-200 font-tech font-bold text-xs">
-                ${u.locked ? 'LOCKED (PROTECTED)' : 'UNLOCKED'}
-              </button>
-              <button onclick="UpgradeSystem.selectUnit('${u.instanceId}'); UI.switchScreen('upgrade')" class="clip-btn py-2 bg-cyan-700 text-white font-tech font-bold text-xs">
-                ASCEND / EVOLVE
-              </button>
-              <button onclick="TraitSystem.selectUnit('${u.instanceId}'); UI.switchScreen('trait')" class="clip-btn py-2 bg-fuchsia-700 text-white font-tech font-bold text-xs">
-                REROLL TRAIT
-              </button>
-            </div>
-            <button onclick="UI.sellSingleUnit('${u.instanceId}')" class="mt-2 w-full py-1.5 rounded bg-rose-950/90 hover:bg-rose-800 text-rose-200 font-tech text-[11px] border border-rose-500/30">
-              SELL UNIT (+${sellVal.gold} Gold &amp; +${sellVal.shards} Trait Shards)
-            </button>
-          </div>
-        `;
-      },
-
-      // MAP & DIFFICULTY SELECTION MODAL
-      setMapDifficulty(diff) {
-        SoundFX.play('click');
-        this.selectedDifficulty = diff;
-        ['normal', 'nightmare', 'hell', 'infinite'].forEach(d => {
-          const btn = document.getElementById('diffBtn-' + d);
-          if (!btn) return;
-          if (d === diff) {
-            btn.className = 'px-3 py-1.5 rounded font-tech text-xs font-bold bg-gradient-to-r from-amber-500 to-rose-600 text-white shadow';
-          } else {
-            btn.className = 'px-3 py-1.5 rounded font-tech text-xs font-bold bg-slate-900 text-slate-400 hover:text-white';
+        // 2. Pick top units matching the Recommended Counter Element (+50% DMG)
+        const counterUnits = all.filter(u => !u.equipped && UNIT_DATABASE[u.unitId]?.element === recElement)
+          .sort((a, b) => GameStore.getUnitCombatStats(b).dps - GameStore.getUnitCombatStats(a).dps);
+        for (const u of counterUnits) {
+          if (selected.length >= 4) break;
+          if (!usedUnitIds.has(u.unitId)) {
+            u.equipped = true;
+            selected.push(u);
+            usedUnitIds.add(u.unitId);
           }
+        }
+
+        // 3. Fill remaining slots up to 6 with highest DPS units
+        const rest = all.filter(u => !u.equipped).sort((a, b) => {
+          const sa = GameStore.getUnitCombatStats(a);
+          const sb = GameStore.getUnitCombatStats(b);
+          return (rarityRank[sb.base.rarity] - rarityRank[sa.base.rarity]) || (sb.dps - sa.dps);
         });
-        this.openMapSelectModal();
+        for (const u of rest) {
+          if (selected.length >= 6) break;
+          if (!usedUnitIds.has(u.unitId)) {
+            u.equipped = true;
+            selected.push(u);
+            usedUnitIds.add(u.unitId);
+          }
+        }
+        for (const u of rest) {
+          if (selected.length >= 6) break;
+          if (!u.equipped) {
+            u.equipped = true;
+            selected.push(u);
+          }
+        }
+
+        SaveSystem.save();
+        this.renderLobbySquad();
+        this.renderInventory();
+        this.toast(`Đã trang bị Đội Hình Khắc Hệ [${recElement} +50% DMG] & Unit Buff Tiền!`, 'emerald');
+        if (mapId) {
+          BattleEngine.startBattle(mapId, this.selectedDifficulty);
+        } else {
+          this.openMapSelectModal();
+        }
       },
 
       openMapSelectModal() {
@@ -5928,33 +6287,75 @@
         modal.classList.remove('hidden');
         const dCfg = BattleEngine.difficultyConfig[this.selectedDifficulty] || BattleEngine.difficultyConfig.normal;
 
-        container.innerHTML = MAP_DATABASE.map((m, idx) => {
-          const domElem = ELEMENT_SYSTEM.order[idx % ELEMENT_SYSTEM.order.length];
+        const timerEl = document.getElementById('realmRotationCountdown');
+        if (timerEl) {
+          timerEl.textContent = `Resets in: ${RealmRotationSystem.getRemainingTimeFormatted()}`;
+        }
+
+        container.innerHTML = MAP_DATABASE.map((m) => {
+          const live = RealmRotationSystem.getRealmLiveState(m.id);
+          const domElem = live.dominantElement;
+          const recElem = live.recommendedElement;
+          const mut = live.mutator;
+
           const rGold = Math.round(m.rewardGold * dCfg.rewardMult);
           const rGems = Math.round(m.rewardGems * dCfg.rewardMult);
           const rShards = Math.round(m.rewardShards * dCfg.rewardMult);
           const rRemnants = Math.round(m.rewardRemnants * dCfg.rewardMult);
 
+          // Check how many equipped units match the recommended counter element
+          const equippedCounters = GameStore.state.units.filter(u => u.equipped && UNIT_DATABASE[u.unitId]?.element === recElem).length;
+
           return `
-            <div class="p-4 rounded-xl bg-slate-950/90 border-2 border-slate-800 hover:border-amber-400 transition flex flex-col justify-between">
+            <div class="p-3.5 rounded-xl bg-slate-950/90 border-2 border-slate-800 hover:border-amber-400 transition flex flex-col justify-between">
               <div>
-                <div class="flex items-center justify-between">
+                <div class="flex flex-wrap items-center justify-between gap-1">
                   <span class="text-[10px] font-tech uppercase px-2 py-0.5 rounded bg-amber-500/20 text-amber-300">${dCfg.name}</span>
-                  <span class="text-[10px] font-tech flex items-center gap-1" style="color:${ELEMENT_SYSTEM.colors[domElem]}">
-                    <span class="w-3.5 h-3.5">${ArtEngine.getElementSvg(domElem)}</span> Dominant: ${domElem}
+                  <span class="text-[10px] font-tech px-2 py-0.5 rounded bg-fuchsia-950/80 border border-fuchsia-500/40 text-fuchsia-300">
+                    ${mut.bonusText}
                   </span>
                 </div>
-                <h3 class="font-display font-bold text-lg text-white mt-2">${m.name}</h3>
-                <p class="text-xs text-rose-300 font-tech mt-0.5">Boss: ${m.bossName} (Stun Roar + Escorts)</p>
-                <div class="mt-3 p-2.5 rounded bg-slate-900/90 border border-slate-800 text-[11px] font-tech text-slate-300 space-y-1">
-                  <div>Clear Rewards: <span class="text-amber-300">+${rGold.toLocaleString()} Gold</span>, <span class="text-cyan-300">+${rGems} Gems</span></div>
-                  <div>Materials: <span class="text-fuchsia-300">+${rShards} Trait Shards</span>, <span class="text-rose-300">+${rRemnants} Star Remnants</span></div>
-                  <div class="text-[10px] text-slate-400">Enemies: Shielded, 45% Armored, Regenerators &amp; 12 Waves</div>
+
+                <h3 class="font-display font-bold text-base sm:text-lg text-white mt-1.5">${m.name}</h3>
+                <p class="text-[11px] text-rose-300 font-tech">Boss: ${m.bossName}</p>
+
+                <!-- Real-Time Element & Recommended Counter Box -->
+                <div class="mt-2 p-2 rounded-lg bg-slate-900/95 border border-cyan-500/30 grid grid-cols-2 gap-2 text-[10px] font-tech">
+                  <div>
+                    <div class="text-slate-400">HỆ QUÁI HIỆN TẠI:</div>
+                    <div class="font-bold flex items-center gap-1 mt-0.5" style="color:${ELEMENT_SYSTEM.colors[domElem]}">
+                      <span class="w-3.5 h-3.5">${ArtEngine.getElementSvg(domElem)}</span> ${ELEMENT_SYSTEM.names[domElem]}
+                    </div>
+                  </div>
+                  <div>
+                    <div class="text-emerald-300">ĐỀ XUẤT HỆ KHẮC (+50% DMG):</div>
+                    <div class="font-bold flex items-center gap-1 mt-0.5" style="color:${ELEMENT_SYSTEM.colors[recElem]}">
+                      <span class="w-3.5 h-3.5">${ArtEngine.getElementSvg(recElem)}</span> ${ELEMENT_SYSTEM.names[recElem]} (${equippedCounters} đang mang)
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Real-Time Mutator & Diverse Enemy Warning -->
+                <div class="mt-2 p-2 rounded bg-slate-900/80 border border-slate-800 text-[10px]">
+                  <div class="font-tech font-bold text-amber-300">⚡ Biến Thể Thời Gian Thực: ${mut.name}</div>
+                  <div class="text-slate-300 mt-0.5">${mut.desc}</div>
+                  <div class="text-slate-400 mt-1 font-tech">Quái: Healer, Shielder, Grow HP, Splitter, Berserker, Blinker (${dCfg.isInfinite ? '∞' : '12'} Waves đông đảo)</div>
+                </div>
+
+                <div class="mt-2 flex flex-wrap items-center justify-between text-[10px] font-tech text-slate-300 px-1">
+                  <span>Thưởng: <strong class="text-amber-300">+${rGold.toLocaleString()}G</strong> • <strong class="text-cyan-300">+${rGems} Gems</strong></span>
+                  <span><strong class="text-fuchsia-300">+${rShards} Shards</strong> • <strong class="text-rose-300">+${rRemnants} Remnants</strong></span>
                 </div>
               </div>
-              <button onclick="BattleEngine.startBattle('${m.id}', '${this.selectedDifficulty}')" class="mt-4 clip-btn w-full py-2.5 bg-gradient-to-r from-amber-500 to-rose-600 text-white font-tech font-bold text-xs shadow-lg">
-                DEPLOY ON ${dCfg.name} →
-              </button>
+
+              <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <button onclick="UI.equipRecommendedForRealm('${recElem}', '${m.id}')" class="clip-btn py-2 px-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-slate-950 font-tech font-bold text-[10px] shadow">
+                  ⚡ AUTO ĐỘI HÌNH ${recElem.toUpperCase()} &amp; VÀO
+                </button>
+                <button onclick="BattleEngine.startBattle('${m.id}', '${this.selectedDifficulty}')" class="clip-btn py-2 px-2 bg-gradient-to-r from-amber-500 to-rose-600 text-white font-tech font-bold text-[10px] shadow-lg">
+                  VÀO TRẬN NGAY →
+                </button>
+              </div>
             </div>
           `;
         }).join('');
