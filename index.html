@@ -4579,6 +4579,41 @@
 
         el.innerHTML = `
           <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+            <div class="flex items-center gap-2">
+              <div class="w-10 h-10 rounded overflow-hidden border border-slate-700">
+                ${ArtEngine.getCharacterPortraitSvg(u.unitId, u.evolved)}
+              </div>
+              <div>
+                <h4 class="font-display font-bold text-xs text-white">${u.name.split(':')[0]}</h4>
+                <span class="text-[9px] font-tech text-amber-300">Level ${u.tier} / 5</span>
+              </div>
+            </div>
+            <button onclick="BattleEngine.selectPlacedUnit(null)" class="text-slate-400 hover:text-white text-xs">✕</button>
+          </div>
+          <div class="mt-2.5 space-y-2 text-[11px] font-tech">
+            <div class="flex justify-between"><span>Damage:</span><strong class="text-amber-300">${u.dmg}</strong></div>
+            <div class="flex justify-between"><span>Range:</span><strong class="text-cyan-300">${u.range}</strong></div>
+            <div class="flex justify-between"><span>SPA:</span><strong class="text-emerald-300">${u.spa}s</strong></div>
+            <div class="flex justify-between"><span>Total Dealt:</span><strong class="text-fuchsia-300">${u.totalDamageDealt.toLocaleString()}</strong></div>
+            <div class="flex justify-between"><span>Targeting:</span><strong class="text-white">${u.targeting}</strong></div>
+          </div>
+          <div class="mt-3 grid grid-cols-2 gap-1.5 pt-2 border-t border-slate-800">
+            <button onclick="BattleEngine.upgradePlacedUnit('${u.id}')" ${u.tier >= 5 ? 'disabled' : ''} class="clip-btn py-1.5 px-2 bg-emerald-600 disabled:opacity-40 text-slate-950 font-tech font-bold text-[10px]">
+              ${u.tier >= 5 ? 'MAX LV' : `UPG (${upgCost}¥)`}
+            </button>
+            <button onclick="BattleEngine.cycleTargeting('${u.id}')" class="clip-btn py-1.5 px-2 bg-cyan-700 text-white font-tech font-bold text-[10px]">
+              TARGET
+            </button>
+            <button onclick="BattleEngine.castActiveSkill('${u.id}')" ${u.skillCooldown > 0 ? 'disabled' : ''} class="clip-btn py-1.5 px-2 bg-fuchsia-600 disabled:opacity-40 text-white font-tech font-bold text-[10px]">
+              ${u.skillCooldown > 0 ? `${Math.ceil(u.skillCooldown)}s` : 'SKILL'}
+            </button>
+            <button onclick="BattleEngine.sellPlacedUnit('${u.id}')" class="clip-btn py-1.5 px-2 bg-rose-700 text-white font-tech font-bold text-[10px]">
+              SELL (+${refund}¥)
+            </button>
+          </div>
+        `;
+      },
+
       // Steeper Tactical Wave Scaling + Higher Enemy Density + 9 Diverse Archetypes (Healer, Shielder, Grow HP, Splitter, Berserker, Blinker, Armored, Regen)
       prepareWave(waveNum) {
         this.wave = waveNum;
@@ -4787,27 +4822,27 @@
 
       toggleAutoWave() {
         this.autoWave = !this.autoWave;
-        // 1. Wave Spawning (Faster interval for larger swarm density)
-        if (this.waveState === 'spawning') {
-          this.spawnTimer -= dt;
-          if (this.spawnTimer <= 0 && this.spawnQueue.length > 0) {
-            const tpl = this.spawnQueue.shift();
-            this.enemies.push({
-              ...tpl,
-              id: 'en_' + Date.now() + '_' + Math.random(),
-              x: wps[0].x,
-              y: wps[0].y,
-              wpIndex: 1,
-              distanceTraveled: 0,
-              slowTimer: 0,
-              freezeTimer: 0,
-              frostbiteTimer: 0,
-              burnTimer: 0,
-              burnDmg: 0
-            });
-            this.spawnTimer = 0.48;
-          }
-          if (this.spawnQueue.length === 0) {
+        const btn = document.getElementById('btnAutoWave');
+        if (btn) {
+          btn.textContent = `AUTO WAVE: ${this.autoWave ? 'ON' : 'OFF'}`;
+          btn.className = this.autoWave
+            ? 'clip-btn px-2 py-1 bg-emerald-600/50 border border-emerald-400 text-emerald-200 font-tech font-bold text-[10px] sm:text-xs'
+            : 'clip-btn px-2 py-1 bg-slate-800 text-slate-400 font-tech font-bold text-[10px] sm:text-xs';
+        }
+      },
+
+      toggleAutoSkill() {
+        this.autoSkill = !this.autoSkill;
+        const btn = document.getElementById('btnAutoSkill');
+        if (btn) {
+          btn.textContent = `AUTO SKILL: ${this.autoSkill ? 'ON' : 'OFF'}`;
+          btn.className = this.autoSkill
+            ? 'clip-btn px-2 py-1 bg-fuchsia-600/50 border border-fuchsia-400 text-fuchsia-200 font-tech font-bold text-[10px] sm:text-xs'
+            : 'clip-btn px-2 py-1 bg-slate-800 text-slate-400 font-tech font-bold text-[10px] sm:text-xs';
+        }
+      },
+
+      triggerNextWaveManual() {
             this.waveState = 'clearing';
           }
         }
@@ -5549,18 +5584,18 @@
           ctx.fill();
 
           ctx.strokeStyle = theme.hillStroke;
-          ctx.lineWidth = this.placingSquadInstance ? 3 : 1.8;
-          ctx.setLineDash([8, 5]);
-          ctx.stroke();
-          ctx.setLineDash([]);
+      loop(timestamp) {
+        if (!this.active) return;
+        const dt = Math.min(0.1, (timestamp - this.lastTime) / 1000) * this.gameSpeed;
+        this.lastTime = timestamp;
 
-          ctx.fillStyle = theme.hillStroke;
-          ctx.font = '700 10px Orbitron';
-          ctx.textAlign = 'center';
-          ctx.fillText('HILL HIGH-GROUND', hill.x, hill.y - hill.r + 16);
-        }
+        this.update(dt);
+        this.draw();
 
-        // 4. Winding Enemy March Path
+        this.animId = requestAnimationFrame((ts) => this.loop(ts));
+      },
+
+      update(dt) {
         const wps = this.currentMap.waypoints;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
@@ -5670,143 +5705,143 @@
 
           // Enemy Health Bar + Blue Shield Bar + Element & Trait Label
           const bw = e.isBoss ? 68 : 36;
-          const bh = e.isBoss ? 6 : 4;
-          const hpRatio = Math.max(0, e.hp / e.maxHp);
-          const barY = e.y - e.radius - 12;
+      onProjectileImpact(p) {
+        const u = p.unit;
+        SoundFX.play('hit');
 
-          ctx.fillStyle = 'rgba(0,0,0,0.8)';
-          ctx.fillRect(e.x - bw / 2, barY, bw, bh);
-          ctx.fillStyle = e.isBoss ? '#ff2a5f' : '#22c55e';
-          ctx.fillRect(e.x - bw / 2, barY, bw * hpRatio, bh);
+        // Economy Units & Aurelia On-Hit Aether Gold Generation (scales with upgrade tier!)
+        if (u.unitId === 'aurelia' || u.hitGoldBonus > 0) {
+          const baseHitGold = u.hitGoldBonus || 12;
+          const gainedGold = Math.round(baseHitGold * (1 + (u.tier - 1) * 0.25));
+          this.mana += gainedGold;
+          u.totalGoldGenerated = (u.totalGoldGenerated || 0) + gainedGold;
+        }
 
-          // Shield Bar (Blue overlay above HP bar)
-          if (e.shield > 0 && e.maxShield > 0) {
-            const shRatio = Math.min(1, e.shield / e.maxShield);
-            ctx.fillStyle = '#38bdf8';
-            ctx.fillRect(e.x - bw / 2, barY - 4, bw * shRatio, 3);
+        // Lyra Passive [Tempest Gale]: Every 3rd attack gains +8% Crit Rate (up to +40%)
+        if (u.unitId === 'lyra' && p.attackIndex % 3 === 0) {
+          u.bonusCritStacks = Math.min(5, (u.bonusCritStacks || 0) + 1);
+        }
+
+        // Akatsuki Passive [Eclipse Annihilation]: Cleanses stun from nearby allies on attack
+        if (u.unitId === 'akatsuki') {
+          this.placedUnits.forEach(ally => {
+            if (ally.stunTimer > 0 && Math.hypot(ally.x - u.x, ally.y - u.y) <= 180) {
+              ally.stunTimer = 0;
+            }
+          });
+        }
+
+        let targets = this.enemies.filter(e => Math.hypot(e.x - p.tx, e.y - p.ty) <= u.aoeRadius);
+        // Aethelgard Passive [Chronos Starlight]: Chains to up to 4 targets even outside splash radius
+        if (u.unitId === 'aethelgard' && targets.length < 4) {
+          const extras = this.enemies
+            .filter(e => !targets.includes(e) && Math.hypot(e.x - u.x, e.y - u.y) <= u.range)
+            .slice(0, 4 - targets.length);
+          targets = targets.concat(extras);
+        }
+
+        this.shockwaves.push({
+          x: p.tx,
+          y: p.ty,
+          r: 6,
+          maxR: u.aoeRadius,
+          color: p.color,
+          alpha: 0.85
+        });
+
+        targets.forEach(e => {
+          let dmg = u.dmg;
+
+          // 1. Elemental Counter Multiplier (Pyro > Aero > Terra > Hydro > Pyro & Lux <-> Umbra)
+          const elemMult = ELEMENT_SYSTEM.getMultiplier(u.element, e.element);
+          dmg = Math.round(dmg * elemMult);
+
+          // Seraphina Passive [Tidal Sanctuary]: Frostbitten targets take +20% Elemental Damage
+          if (e.frostbiteTimer > 0) {
+            dmg = Math.round(dmg * 1.20);
           }
 
-          // Element & Tactical Trait Tag
-          ctx.fillStyle = ELEMENT_SYSTEM.colors[e.element] || '#ffffff';
-          ctx.font = '700 8px Orbitron';
-          ctx.textAlign = 'center';
-          ctx.fillText(`${e.element.toUpperCase()}${e.traitTag ? '•' + e.traitTag : ''}`, e.x, barY - 6);
-        }
-
-        // 9. Projectiles & Shockwaves
-        for (const p of this.projectiles) {
-          ctx.fillStyle = p.color;
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.isSecretCollapse ? 7 : 5, 0, Math.PI * 2);
-          ctx.fill();
-        }
-
-        for (const sw of this.shockwaves) {
-          ctx.strokeStyle = sw.color;
-          ctx.globalAlpha = Math.max(0, sw.alpha);
-          ctx.lineWidth = 3;
-          ctx.beginPath();
-          ctx.arc(sw.x, sw.y, sw.r, 0, Math.PI * 2);
-          ctx.stroke();
-          ctx.globalAlpha = 1;
-        }
-
-        // 10. Free-Form Ghost Placement Preview
-        if (this.placingSquadInstance) {
-          const wx = this.pointerWorldPos.x;
-          const wy = this.pointerWorldPos.y;
-          const check = this.validatePlacement(wx, wy, this.placingSquadInstance);
-          const stats = GameStore.getUnitCombatStats(this.placingSquadInstance);
-          const ringColor = check.valid ? '#22c55e' : '#ef4444';
-
-          // Attack Range Preview Circle
-          ctx.fillStyle = check.valid ? 'rgba(34, 197, 94, 0.12)' : 'rgba(239, 68, 68, 0.14)';
-          ctx.strokeStyle = ringColor;
-          ctx.lineWidth = 2;
-          ctx.beginPath();
-          ctx.arc(wx, wy, stats.range, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.stroke();
-
-          // Unit Footprint Circle
-          ctx.fillStyle = ringColor + '55';
-          ctx.beginPath();
-          ctx.arc(wx, wy, 26, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.stroke();
-
-          // Live Validity Status Label
-          ctx.fillStyle = check.valid ? '#86efac' : '#fca5a5';
-          ctx.font = '700 11px Orbitron';
-          ctx.textAlign = 'center';
-          ctx.fillText(check.reason, wx, wy - 36);
-        }
-
-        // 11. Floating Combat Damage Numbers
-        for (const ft of this.floatingTexts) {
-          ctx.fillStyle = ft.color;
-          ctx.font = '800 13px Orbitron';
-          ctx.textAlign = 'center';
-          ctx.fillText(ft.text, ft.x, ft.y);
-        }
-
-        // 12. Ambient Particles
-        if (GameStore.state.settings.particles) {
-          for (const pt of this.particles) {
-            ctx.fillStyle = pt.color;
-            ctx.globalAlpha = pt.alpha;
-            ctx.beginPath();
-            ctx.arc(pt.x, pt.y, pt.size, 0, Math.PI * 2);
-            ctx.fill();
+          // 2. Unit Unique Passives
+          if (u.unitId === 'ignis' || u.unitId === 'kaelen') {
+            // Ignis [Hellfire Brand] & Kaelen [Dragon Sovereign]: Scorch 3.5% Max HP/s & stops Regeneration
+            e.burnTimer = 4.0;
+            e.burnDmg = Math.max(Math.round(u.dmg * 0.35), Math.round(e.maxHp * 0.035));
+            if (u.unitId === 'kaelen') {
+              e.armorShred = Math.max(e.armorShred || 0, 0.40);
+            }
           }
-          ctx.globalAlpha = 1;
-        }
-
-        ctx.restore();
-      }
-    };
-
-    /***************************************************************************
-     * MODULE 10: UI CONTROLLER, QUICK EQUIP/UNEQUIP, BATCH SELL & ELEMENTAL CHART
-     ***************************************************************************/
-    const UI = {
-      currentScreen: 'lobby',
-      invFilter: 'ALL',
-      selectedInvId: null,
-      showcaseIndex: 0,
-      selectedDifficulty: 'normal',
-
-      init() {
-        // Inject Custom SVG Icons into HUD & Lobby
-        document.getElementById('iconGold').innerHTML = ArtEngine.icons.gold;
-        document.getElementById('iconGem').innerHTML = ArtEngine.icons.gem;
-        document.getElementById('iconShard').innerHTML = ArtEngine.icons.shard;
-        document.getElementById('iconRemnant').innerHTML = ArtEngine.icons.remnant;
-        document.getElementById('iconPlaySword').innerHTML = ArtEngine.icons.sword;
-        document.getElementById('lobbyMagicCircle').innerHTML = ArtEngine.icons.magicCircle;
-        document.getElementById('secretTraitRunePreview').innerHTML = ArtEngine.getTraitRuneSvg('Secret', true);
-
-        document.getElementById('navIconSummon').innerHTML = ArtEngine.icons.gem;
-        document.getElementById('navIconInventory').innerHTML = ArtEngine.icons.sword;
-        document.getElementById('navIconUpgrade').innerHTML = ArtEngine.icons.remnant;
-        document.getElementById('navIconTrait').innerHTML = ArtEngine.icons.shard;
-        document.getElementById('navIconQuest').innerHTML = ArtEngine.icons.star;
-        document.getElementById('navIconShop').innerHTML = ArtEngine.icons.gold;
-
-        this.renderElementalChartWidget();
-        this.initLobbyBgCanvas();
-        BattleEngine.initCanvas();
-        this.refreshAll();
-
-        // Mobile Portrait Orientation Detector & Real-Time Realm Rotation Ticker
-        this.checkMobileOrientation();
-        window.addEventListener('resize', () => this.checkMobileOrientation());
-        setInterval(() => {
-          const timerEl = document.getElementById('realmRotationCountdown');
-          if (timerEl) {
-            timerEl.textContent = `Resets in: ${RealmRotationSystem.getRemainingTimeFormatted()}`;
+          if (u.unitId === 'lyra' && p.attackIndex % 3 === 0 && !e.isBoss) {
+            // Knockback on every 3rd hit
+            e.distanceTraveled = Math.max(0, e.distanceTraveled - 18);
           }
-        }, 1000);
+          if (u.unitId === 'thorne') {
+            // Thorne [Seismic Bastion]: 30% Slow + 25% Armor Shred
+            e.slowTimer = Math.max(e.slowTimer, 4.0);
+            e.armorShred = Math.max(e.armorShred || 0, 0.25);
+          }
+          if (u.unitId === 'seraphina') {
+            e.frostbiteTimer = 4.0;
+          }
+          if (u.unitId === 'vespera') {
+            // Vespera [Soul Reaper]: +4% current HP bonus damage
+            dmg += Math.min(u.dmg * 3, Math.round(e.hp * 0.04));
+          }
+          if (u.unitId === 'gilgamesh') {
+            // Gilgamesh [Gate of Babylon]: Pierces 45% Armor & deals +50% Bonus DMG to Bosses
+            e.armorShred = Math.max(e.armorShred || 0, 0.45);
+            if (e.isBoss) dmg = Math.round(dmg * 1.50);
+          }
+          if (u.unitId === 'yukimura') {
+            // Yukimura [Absolute Zero]: +60% DMG to slowed/frozen enemies & freeze every 4th strike
+            if (e.slowTimer > 0 || e.freezeTimer > 0) dmg = Math.round(dmg * 1.60);
+            if (p.attackIndex % 4 === 0) {
+              e.freezeTimer = Math.max(e.freezeTimer, 1.2);
+              this.floatingTexts.push({ x: e.x, y: e.y - 26, text: 'ABSOLUTE ZERO!', color: '#67e8f9', life: 0.9 });
+            }
+            e.slowTimer = Math.max(e.slowTimer, 2.5);
+          }
+          if (u.unitId === 'akatsuki' && p.attackIndex % 5 === 0) {
+            // Akatsuki [Eclipse Annihilation]: Summons Void Clone every 5th attack for 200% DMG
+            dmg = Math.round(dmg * 2.0);
+            this.floatingTexts.push({ x: e.x, y: e.y - 30, text: 'VOID CLONE SLASH!', color: '#ff2a5f', life: 1.0 });
+          }
+
+          // 3. Trait Conditional Multipliers
+          if (u.trait.lowHpBonus && (e.hp / e.maxHp) <= 0.35) {
+            dmg = Math.round(dmg * u.trait.lowHpBonus);
+          }
+          if (u.trait.bossBonus && e.isBoss) {
+            dmg = Math.round(dmg * u.trait.bossBonus);
+          }
+
+          const totalCritRate = Math.min(0.95, u.critRate + (u.bonusCritStacks || 0) * 0.08);
+          const isCrit = Math.random() < totalCritRate;
+          if (isCrit) dmg = Math.round(dmg * 1.75);
+
+          // Secret Trait: Chronos Singularity -> Temporal Collapse on every 5th attack!
+          if (p.isSecretCollapse) {
+            e.freezeTimer = Math.max(e.freezeTimer, 1.8);
+            const trueBurst = Math.min(u.dmg * 4, Math.round(e.maxHp * 0.25));
+            dmg += trueBurst;
+            this.floatingTexts.push({ x: e.x, y: e.y - 32, text: 'TEMPORAL COLLAPSE!', color: '#ff2a5f', life: 1.2 });
+          }
+
+          if (u.slowEffect > 0) e.slowTimer = Math.max(e.slowTimer, 2.0);
+
+          const isTrueDmg = u.unitId === 'aethelgard' || u.trait.isUnique || u.trait.isSecret;
+          this.damageEnemy(e, dmg, u, isCrit, p.color, isTrueDmg, elemMult);
+
+          // Execute Passives: Vespera (<12% non-boss) & Akatsuki (<18%)
+          if (e.hp > 0 && !e.isBoss) {
+            const hpPct = e.hp / e.maxHp;
+            if ((u.unitId === 'akatsuki' && hpPct <= 0.18) || (u.unitId === 'vespera' && hpPct <= 0.12)) {
+              e.hp = 0;
+              this.floatingTexts.push({ x: e.x, y: e.y - 28, text: 'EXECUTED!', color: '#ff2a5f', life: 1.0 });
+            }
+          }
+        });
+
+        this.renderUnitManager();
       },
 
       dismissedRotateBanner: false,
@@ -6459,8 +6494,15 @@
 
     // BOOTSTRAP APPLICATION ON WINDOW LOAD
     window.onload = async function () {
-      await SaveSystem.init();
-      UI.init();
+      try {
+        await SaveSystem.init();
+        UI.init();
+      } catch (err) {
+        console.error("Initialization error:", err);
+        // Fallback init if IndexedDB encounters blocking permissions in iframe
+        GameStore.state = GameStore.getDefaultState();
+        UI.init();
+      }
     };
   </script>
 </body>
