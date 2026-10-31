@@ -228,6 +228,9 @@
       </div>
 
       <!-- Return to Lobby Button (shown when inside sub-screens) -->
+      <button onclick="UI.toggleFullscreen()" class="clip-btn px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-cyan-300 font-tech text-[10px] sm:text-xs font-bold border border-cyan-500/40" title="Toggle Fullscreen for Mobile">
+        FULLSCREEN
+      </button>
       <button id="btnReturnLobby" onclick="UI.switchScreen('lobby')" class="hidden clip-btn px-3 py-1.5 bg-gradient-to-r from-cyan-600 to-blue-700 text-white font-tech text-xs font-bold tracking-wider border border-cyan-300/50 shadow-lg">
         LOBBY
       </button>
@@ -788,15 +791,17 @@
 
           <!-- Right Controls: In-Battle Unit Manager Button, Elemental Guide, Speed, Auto-Wave, Camera, Exit -->
           <div class="anime-panel px-2.5 py-1.5 rounded-lg pointer-events-auto flex flex-wrap items-center gap-1.5">
-            <button onclick="BattleEngine.toggleUnitManager()" class="clip-btn px-3 py-1 bg-gradient-to-r from-amber-500 to-orange-600 text-slate-950 font-tech font-bold text-xs shadow">
-              UNIT MANAGER [<span id="btnUnitMgrCount">0/12</span>]
+            <button onclick="BattleEngine.toggleUnitManager()" class="clip-btn px-2.5 sm:px-3 py-1 bg-gradient-to-r from-amber-500 to-orange-600 text-slate-950 font-tech font-bold text-[11px] sm:text-xs shadow">
+              UNIT MGR [<span id="btnUnitMgrCount">0/12</span>]
             </button>
-            <button id="btnBattleSpeed" onclick="BattleEngine.cycleSpeed()" class="clip-btn px-2.5 py-1 bg-cyan-600/30 border border-cyan-400/50 text-cyan-200 font-tech font-bold text-xs">1X</button>
-            <button id="btnAutoWave" onclick="BattleEngine.toggleAutoWave()" class="clip-btn px-2.5 py-1 bg-emerald-600/30 border border-emerald-400/50 text-emerald-200 font-tech font-bold text-xs">AUTO: ON</button>
+            <button id="btnBattleSpeed" onclick="BattleEngine.cycleSpeed()" class="clip-btn px-2.5 py-1 bg-cyan-600/30 border border-cyan-400/50 text-cyan-200 font-tech font-bold text-[11px] sm:text-xs">1X</button>
+            <button id="btnAutoWave" onclick="BattleEngine.toggleAutoWave()" class="clip-btn px-2 py-1 bg-emerald-600/30 border border-emerald-400/50 text-emerald-200 font-tech font-bold text-[10px] sm:text-xs">AUTO WAVE: ON</button>
+            <button id="btnAutoSkill" onclick="BattleEngine.toggleAutoSkill()" class="clip-btn px-2 py-1 bg-fuchsia-600/30 border border-fuchsia-400/50 text-fuchsia-200 font-tech font-bold text-[10px] sm:text-xs">AUTO SKILL: OFF</button>
             <button onclick="BattleEngine.zoomCamera(0.15)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded text-xs font-tech text-slate-200" title="Zoom In">+</button>
             <button onclick="BattleEngine.zoomCamera(-0.15)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded text-xs font-tech text-slate-200" title="Zoom Out">-</button>
-            <button onclick="BattleEngine.resetCamera()" class="hidden sm:inline-block px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded text-[10px] font-tech text-slate-300">CAM</button>
-            <button onclick="BattleEngine.leaveBattle()" class="clip-btn px-2.5 py-1 bg-rose-700/80 hover:bg-rose-600 text-white font-tech font-bold text-xs">RETREAT</button>
+            <button onclick="BattleEngine.resetCamera()" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded text-[10px] font-tech text-slate-300">CAM</button>
+            <button onclick="UI.toggleFullscreen()" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded text-[10px] font-tech text-cyan-300">FULL</button>
+            <button onclick="BattleEngine.leaveBattle()" class="clip-btn px-2.5 py-1 bg-rose-700/80 hover:bg-rose-600 text-white font-tech font-bold text-[11px] sm:text-xs">EXIT</button>
           </div>
         </div>
 
@@ -824,26 +829,36 @@
           </div>
         </div>
 
-        <!-- Placement Instruction Banner (Shown while placing a unit) -->
-        <div id="placementHintBanner" class="hidden mx-auto anime-panel px-4 py-1.5 rounded-full border border-amber-400/60 text-xs font-tech text-amber-200 pointer-events-auto flex items-center gap-3">
-          <span id="placementHintText">Select any valid coordinate on the map to deploy unit.</span>
-          <button onclick="BattleEngine.cancelPlacement()" class="px-2 py-0.5 rounded bg-rose-600 text-white text-[10px]">CANCEL [ESC]</button>
+        <!-- Placement Instruction Banner (Shown while placing a unit - Enhanced for Mobile Touch Confirm) -->
+        <div id="placementHintBanner" class="hidden mx-auto anime-panel px-3.5 py-1.5 rounded-2xl border-2 border-amber-400/80 text-xs font-tech text-amber-200 pointer-events-auto flex flex-wrap items-center justify-center gap-2 shadow-2xl">
+          <span id="placementHintText" class="text-[11px] sm:text-xs">Chạm hoặc kéo trên bản đồ để chọn vị trí đặt Unit.</span>
+          <div class="flex items-center gap-1.5">
+            <button onclick="BattleEngine.confirmMobilePlacement()" class="clip-btn px-3 py-1 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-tech font-bold text-[11px] shadow">
+              ✓ ĐẶT TẠI ĐÂY
+            </button>
+            <button onclick="BattleEngine.cancelPlacement()" class="clip-btn px-2.5 py-1 bg-rose-600 hover:bg-rose-500 text-white font-tech font-bold text-[11px]">
+              ✕ HỦY
+            </button>
+          </div>
         </div>
       </div>
 
-      <!-- SELECTED BATTLEFIELD UNIT INSPECTOR (Left Floating Drawer) -->
-      <div id="battleUnitInspector" class="hidden absolute left-3 top-28 z-20 w-72 anime-panel clip-angled p-3.5 border border-cyan-400/50 shadow-2xl pointer-events-auto">
+      <!-- SELECTED BATTLEFIELD UNIT INSPECTOR (Left Floating Drawer - Mobile Responsive) -->
+      <div id="battleUnitInspector" class="hidden absolute left-2 sm:left-3 bottom-24 sm:bottom-auto sm:top-28 z-30 w-[calc(100vw-16px)] max-w-xs sm:w-72 anime-panel clip-angled p-3 border border-cyan-400/60 shadow-2xl pointer-events-auto max-h-[58vh] overflow-y-auto">
         <!-- Populated dynamically when clicking a placed unit on the map -->
       </div>
 
-      <!-- IN-BATTLE UNIT MANAGER PANEL (Right Collapsible Tactical Command Drawer) -->
-      <div id="battleUnitManagerPanel" class="absolute right-3 top-28 z-20 w-80 sm:w-96 max-h-[68vh] anime-panel clip-angled p-3.5 border border-amber-400/50 shadow-2xl pointer-events-auto flex flex-col">
+      <!-- IN-BATTLE UNIT MANAGER PANEL (Right Collapsible Tactical Command Drawer - Mobile Responsive) -->
+      <div id="battleUnitManagerPanel" class="absolute right-2 sm:right-3 bottom-24 sm:bottom-auto sm:top-28 z-30 w-[calc(100vw-16px)] max-w-sm sm:w-96 max-h-[58vh] sm:max-h-[68vh] anime-panel clip-angled p-3 border border-amber-400/60 shadow-2xl pointer-events-auto flex flex-col">
         <div class="flex items-center justify-between border-b border-slate-800 pb-2">
           <div>
             <h3 class="font-display font-bold text-xs sm:text-sm text-amber-300">TACTICAL UNIT MANAGER (<span id="mgrCountHeader">0/12</span>)</h3>
-            <p class="text-[10px] text-slate-400">Real-time Quick Upgrade, Target, Skill &amp; Sell</p>
+            <p class="text-[10px] text-slate-400">Real-time Quick Upgrade, Auto-Upg, Skill &amp; Sell</p>
           </div>
-          <button onclick="BattleEngine.toggleUnitManager()" class="px-2 py-0.5 rounded bg-slate-800 text-xs font-tech text-slate-300 hover:text-white">HIDE</button>
+          <div class="flex items-center gap-1">
+            <button id="btnAutoUpgrade" onclick="BattleEngine.toggleAutoUpgrade()" class="px-2 py-0.5 rounded bg-slate-800 text-[10px] font-tech font-bold text-emerald-300 border border-emerald-500/40" title="Automatically upgrade deployed units when enough Aether ¥">AUTO UPG: OFF</button>
+            <button onclick="BattleEngine.toggleUnitManager()" class="px-2 py-0.5 rounded bg-slate-800 text-xs font-tech text-slate-300 hover:text-white">HIDE</button>
+          </div>
         </div>
         <!-- Batch Manager Actions -->
         <div class="grid grid-cols-3 gap-1.5 my-2">
@@ -889,7 +904,7 @@
           <h2 class="font-display font-black text-xl sm:text-2xl text-white">SELECT BATTLEFIELD &amp; CHALLENGE MODE</h2>
         </div>
         <!-- Difficulty Mode Selector Buttons -->
-        <div class="flex items-center gap-1.5 bg-slate-950 p-1.5 rounded-lg border border-slate-800">
+        <div class="flex flex-wrap items-center gap-1.5 bg-slate-950 p-1.5 rounded-lg border border-slate-800">
           <button id="diffBtn-normal" onclick="UI.setMapDifficulty('normal')" class="px-3 py-1.5 rounded font-tech text-xs font-bold bg-cyan-600 text-white">
             NORMAL (x1.0)
           </button>
@@ -898,6 +913,9 @@
           </button>
           <button id="diffBtn-hell" onclick="UI.setMapDifficulty('hell')" class="px-3 py-1.5 rounded font-tech text-xs font-bold bg-slate-900 text-rose-400">
             ĐỊA NGỤC (x4.0 HP • Shields • x3.0)
+          </button>
+          <button id="diffBtn-infinite" onclick="UI.setMapDifficulty('infinite')" class="px-3 py-1.5 rounded font-tech text-xs font-bold bg-slate-900 text-fuchsia-400">
+            VÔ TẬN (ENDLESS WAVES • ∞)
           </button>
         </div>
         <button onclick="UI.closeModals()" class="px-3 py-1 rounded bg-slate-800 text-slate-300 hover:text-white font-tech text-xs">CLOSE [X]</button>
@@ -923,7 +941,12 @@
               <th class="py-2 px-2">Trait Name</th>
               <th class="py-2 px-2">Tier / Branch</th>
               <th class="py-2 px-2">Normalized Chance</th>
-      <!--div id="traitProbTableBody" section inside modalTraitProb -->
+              <th class="py-2 px-2">Combat Effect</th>
+            </tr>
+          </thead>
+          <tbody id="traitProbTableBody" class="divide-y divide-slate-800/80"></tbody>
+        </table>
+      </div>
       <div class="mt-3 pt-3 border-t border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs">
         <span class="font-tech text-emerald-400">VERIFIED TOTAL PROBABILITY SUM: <strong>100.0000%</strong></span>
         <div class="flex items-center gap-2">
@@ -1115,6 +1138,7 @@
           vespera: { bg1: '#2e1065', bg2: '#7e22ce', hair: '#e9d5ff', hairShade: '#581c87', eye: '#f43f5e', aura: '#c084fc', skin: '#f8fafc', weapon: 'soul_scythe' },
           kaelen: { bg1: '#450a0a', bg2: '#e11d48', hair: '#fb7185', hairShade: '#881337', eye: '#fde047', aura: '#f97316', skin: '#fde68a', weapon: 'dragon_spear' },
           yukimura: { bg1: '#082f49', bg2: '#06b6d4', hair: '#f1f5f9', hairShade: '#64748b', eye: '#38bdf8', aura: '#67e8f9', skin: '#f8fafc', weapon: 'frost_katana' },
+          gilgamesh: { bg1: '#422006', bg2: '#eab308', hair: '#fde047', hairShade: '#b45309', eye: '#ef4444', aura: '#facc15', skin: '#fef3c7', weapon: 'babylon_gates' },
           akatsuki: { bg1: '#090514', bg2: '#ff2a5f', hair: '#0f172a', hairShade: '#ff2a5f', eye: '#ff2a5f', aura: '#ff2a5f', skin: '#f8fafc', weapon: 'eclipse_blades', isSecret: true },
           aethelgard: { bg1: '#3b0764', bg2: '#f59e0b', hair: '#fef08a', hairShade: '#ec4899', eye: '#38bdf8', aura: '#fde047', skin: '#fffbeb', weapon: 'eternity_spear', isSecret: true }
         };
@@ -1173,7 +1197,7 @@
           <path d="M44,72 C40,42 58,22 80,22 C102,22 120,42 116,72 C110,54 102,48 96,68 C90,48 83,44 80,70 C75,46 68,48 63,68 C57,50 50,54 44,72 Z" fill="${p.hair}" stroke="${p.hairShade}" stroke-width="1.2"/>
 
           <!-- Crown / Valkyrie Diadem / Horn Accent for High Rarity & Secret -->
-          ${(unitId === 'aurelia' || unitId === 'seraphina' || unitId === 'aethelgard' || evolved) ? `
+          ${(unitId === 'aurelia' || unitId === 'seraphina' || unitId === 'gilgamesh' || unitId === 'aethelgard' || evolved) ? `
             <polygon points="80,6 95,28 80,22 65,28" fill="#fef08a" stroke="#f59e0b" stroke-width="1.8"/>
           ` : ''}
           ${(unitId === 'kaelen' || unitId === 'akatsuki') ? `
@@ -1373,25 +1397,47 @@
       },
       yukimura: {
         id: 'yukimura',
-        name: 'Yukimura: Frost Emperor',
-        evoName: 'Yukimura: Absolute Zero Deity',
+        name: 'Yukimura: Frostblade Ronin',
+        evoName: 'Yukimura: Absolute Zero Shogun',
         rarity: 'Mythic',
         element: 'Hydro',
-        placementType: 'Hill',
+        placementType: 'Ground',
         cost: 1020,
-        baseDmg: 860,
-        baseRange: 235,
-        baseSpa: 1.25,
+        baseDmg: 890,
+        baseRange: 195,
+        baseSpa: 1.15,
         critRate: 0.38,
-        aoeRadius: 90,
-        slowEffect: 0.45,
+        aoeRadius: 84,
+        slowEffect: 0.35,
         passiveName: 'Absolute Zero',
-        passiveDesc: 'Freezes enemies solid for 1.2s every 4th strike and deals +60% bonus DMG to slowed or frozen targets.',
-        skillName: 'Dimension Ice Age',
-        skillDesc: 'Freezes all enemies in range for 3.0s and inflicts 850% Hydro shatter damage.',
-        quote: 'Even time freezes at the edge of my blade.',
-        evoCostGold: 25000,
-        evoCostRemnants: 40
+        passiveDesc: 'Deals +60% bonus DMG to slowed or frozen enemies and freezes targets solid for 1.2s every 4th strike.',
+        skillName: 'Glacial Dimension Slash',
+        skillDesc: 'Freezes all enemies in range for 2.2s and deals 860% Hydro True AoE DMG.',
+        quote: 'Even time freezes before my unsheathed blade.',
+        evoCostGold: 26000,
+        evoCostRemnants: 42
+      },
+      gilgamesh: {
+        id: 'gilgamesh',
+        name: 'Gilgamesh: Sovereign of Babylon',
+        evoName: 'Gilgamesh: King of Genesis',
+        rarity: 'Mythic',
+        element: 'Lux',
+        placementType: 'Hybrid',
+        cost: 1080,
+        baseDmg: 940,
+        baseRange: 240,
+        baseSpa: 1.18,
+        critRate: 0.40,
+        aoeRadius: 92,
+        waveBountyBonus: 150,
+        passiveName: 'Gate of Babylon',
+        passiveDesc: 'Opens golden spatial portals that pierce 45% Enemy Armor, deal +50% Bonus DMG to Bosses & grant +150 ¥ per wave.',
+        skillName: 'Enuma Elish: Star of Creation',
+        skillDesc: 'Splits heaven and earth for 950% Lux True AoE DMG and shatters all enemy Shields & Armor.',
+        quote: 'All treasures of this world belong to my treasury alone!',
+        evoCostGold: 28000,
+        evoCostRemnants: 45
       },
       // NEW ULTRA-RARE SECRET UNITS (0.15% Banner Rate)
       akatsuki: {
@@ -1561,7 +1607,16 @@
       }
     ];
 
-    // Map Definitions with rich winding waypoints, obstacles (Rivers/Lava/Void), and Elevated Hill Platforms
+    // SACRED RELIC EQUIPMENT DATABASE (Thánh Vật Trang Bị Cho Nhân Vật)
+    const RELIC_DATABASE = {
+      none: { id: 'none', name: 'No Relic Equipped', dmgMult: 1.0, rangeMult: 1.0, spaMult: 1.0, critBonus: 0, desc: 'Forge or equip a Sacred Relic in the Ascension Sanctum.', costGold: 0, costRemnants: 0 },
+      crimson_blade: { id: 'crimson_blade', name: 'Crimson Dragonfang Blade', dmgMult: 1.28, rangeMult: 1.05, spaMult: 1.0, critBonus: 0.08, desc: '+28% Attack Damage, +5% Range & +8% Crit Rate', costGold: 3500, costRemnants: 6 },
+      astral_lens: { id: 'astral_lens', name: 'Astral Horizon Telescope', dmgMult: 1.12, rangeMult: 1.26, spaMult: 0.96, critBonus: 0.12, desc: '+26% Attack Range, +12% DMG, -4% SPA & +12% Crit Rate', costGold: 3500, costRemnants: 6 },
+      chronos_pendulum: { id: 'chronos_pendulum', name: 'Pendulum of Accelerated Fate', dmgMult: 1.15, rangeMult: 1.08, spaMult: 0.84, critBonus: 0.05, desc: '-16% SPA (Faster Attack Speed), +15% DMG & +8% Range', costGold: 4200, costRemnants: 8 },
+      sovereign_crown: { id: 'sovereign_crown', name: 'Crown of the Singularity King', dmgMult: 1.42, rangeMult: 1.18, spaMult: 0.88, critBonus: 0.15, desc: '[MYTHIC RELIC] +42% DMG, +18% Range, -12% SPA & +15% Crit Rate', costGold: 9500, costRemnants: 18 }
+    };
+
+    // Map Definitions with rich winding waypoints, obstacles (Rivers/Lava/Void), and Elevated Hill Platforms (All 7 Realms)
     const MAP_DATABASE = [
       {
         id: 'mystic_forest',
@@ -1722,6 +1777,126 @@
           { x: 640, y: 40, w: 240, h: 85, type: 'Abyssal Rift' },
           { x: 350, y: 570, w: 280, h: 95, type: 'Void Miasma' }
         ]
+      },
+      {
+        id: 'ancient_kingdom',
+        name: 'Ancient Kingdom (Vương Quốc Cổ Đại)',
+        difficulty: 'Hard ★★★☆☆',
+        rewardGold: 2800,
+        rewardGems: 250,
+        rewardShards: 6,
+        rewardRemnants: 7,
+        theme: {
+          bg: '#1c160c',
+          grass: '#2b2314',
+          pathOuter: '#57462b',
+          pathInner: '#78613c',
+          water: 'rgba(234, 179, 8, 0.35)',
+          hillFill: '#3d311c',
+          hillStroke: '#facc15',
+          particle: '#fde047'
+        },
+        bossName: 'Aethelstan: Fallen Golden Colossi',
+        waypoints: [
+          { x: 60, y: 360 },
+          { x: 260, y: 360 },
+          { x: 260, y: 130 },
+          { x: 620, y: 130 },
+          { x: 620, y: 570 },
+          { x: 940, y: 570 },
+          { x: 940, y: 260 },
+          { x: 1130, y: 260 }
+        ],
+        hills: [
+          { x: 150, y: 190, r: 60 },
+          { x: 440, y: 340, r: 68 },
+          { x: 780, y: 340, r: 68 },
+          { x: 1050, y: 460, r: 60 }
+        ],
+        hazards: [
+          { x: 140, y: 510, w: 260, h: 95, type: 'Sunken Ruins' },
+          { x: 740, y: 55, w: 240, h: 80, type: 'Imperial Moat' }
+        ]
+      },
+      {
+        id: 'heavenly_palace',
+        name: 'Heavenly Palace (Thiên Cung Vĩnh Hằng)',
+        difficulty: 'Extreme ★★★★☆',
+        rewardGold: 4200,
+        rewardGems: 360,
+        rewardShards: 10,
+        rewardRemnants: 12,
+        theme: {
+          bg: '#0c192c',
+          grass: '#152947',
+          pathOuter: '#3b82f6',
+          pathInner: '#60a5fa',
+          water: 'rgba(250, 204, 21, 0.42)',
+          hillFill: '#1e3a66',
+          hillStroke: '#fde047',
+          particle: '#fef08a'
+        },
+        bossName: 'Metatron: Seraphim of Judgment',
+        waypoints: [
+          { x: 70, y: 150 },
+          { x: 380, y: 150 },
+          { x: 380, y: 550 },
+          { x: 600, y: 550 },
+          { x: 600, y: 150 },
+          { x: 840, y: 150 },
+          { x: 840, y: 530 },
+          { x: 1120, y: 530 }
+        ],
+        hills: [
+          { x: 220, y: 360, r: 65 },
+          { x: 490, y: 340, r: 62 },
+          { x: 720, y: 340, r: 62 },
+          { x: 990, y: 320, r: 66 }
+        ],
+        hazards: [
+          { x: 110, y: 540, w: 200, h: 95, type: 'Cloud Abyss' },
+          { x: 920, y: 60, w: 200, h: 85, type: 'Solar Sanctum' }
+        ]
+      },
+      {
+        id: 'forgotten_temple',
+        name: 'Forgotten Temple (Ngôi Đền Lãng Quên)',
+        difficulty: 'Cataclysm ★★★★★★',
+        rewardGold: 6800,
+        rewardGems: 600,
+        rewardShards: 18,
+        rewardRemnants: 20,
+        theme: {
+          bg: '#061714',
+          grass: '#0b2621',
+          pathOuter: '#115e59',
+          pathInner: '#0f766e',
+          water: 'rgba(168, 85, 247, 0.45)',
+          hillFill: '#134e4a',
+          hillStroke: '#2dd4bf',
+          particle: '#5eead4'
+        },
+        bossName: 'Ouroboros: Eternal Time Serpent',
+        waypoints: [
+          { x: 70, y: 560 },
+          { x: 480, y: 560 },
+          { x: 180, y: 200 },
+          { x: 660, y: 200 },
+          { x: 480, y: 520 },
+          { x: 960, y: 520 },
+          { x: 820, y: 160 },
+          { x: 1130, y: 160 }
+        ],
+        hills: [
+          { x: 350, y: 370, r: 64 },
+          { x: 580, y: 350, r: 64 },
+          { x: 760, y: 360, r: 66 },
+          { x: 1020, y: 370, r: 64 }
+        ],
+        hazards: [
+          { x: 80, y: 55, w: 240, h: 80, type: 'Cursed Altar' },
+          { x: 640, y: 580, w: 280, h: 90, type: 'Chronos Bog' }
+        ]
       }
     ];
 
@@ -1872,11 +2047,18 @@
             ]
           };
         }
-        const legacyMap = { zephyr: 'thorne', kurogami: 'vespera', noctis: 'yukimura' };
+        const legacyMap = {
+          kuro: 'ignis',
+          sylvia: 'lyra',
+          garrick: 'thorne',
+          elena: 'seraphina'
+        };
         if (Array.isArray(st.units)) {
           st.units.forEach(u => {
             if (legacyMap[u.unitId]) u.unitId = legacyMap[u.unitId];
             if (!UNIT_DATABASE[u.unitId]) u.unitId = 'ignis';
+            if (typeof u.stars !== 'number') u.stars = 1;
+            if (!u.relicId || !RELIC_DATABASE[u.relicId]) u.relicId = 'none';
           });
         }
         return st;
@@ -1888,28 +2070,36 @@
           Rare: { gold: 150, shards: 1 },
           Epic: { gold: 400, shards: 2 },
           Legendary: { gold: 1200, shards: 5 },
-          Mythic: { gold: 4000, shards: 15 },
-          Secret: { gold: 12000, shards: 40 }
+          Mythic: { gold: 3500, shards: 15 },
+          Secret: { gold: 10000, shards: 40 }
         };
         return table[rarity] || table.Rare;
       },
 
-      // Calculate full live combat stats for a unit instance (accounting for Level, Evolution, and active Trait!)
+      // Calculate full live combat stats for a unit instance (accounting for Level, Evolution, Stars, Relic, and active Trait!)
       getUnitCombatStats(instance) {
         const base = UNIT_DATABASE[instance.unitId] || UNIT_DATABASE.ignis;
         const trait = TRAIT_DATABASE.find(t => t.id === instance.traitId) || TRAIT_DATABASE[0];
+        const relic = RELIC_DATABASE[instance.relicId || 'none'] || RELIC_DATABASE.none;
+        const stars = instance.stars || 1;
+
         const levelMult = 1 + (instance.level - 1) * 0.085;
         const evoMult = instance.evolved ? 1.55 : 1.0;
+        const starDmgMult = 1 + (stars - 1) * 0.15; // +15% DMG per Star Limit Break
+        const starRangeMult = 1 + (stars - 1) * 0.05; // +5% Range per Star
+        const starSpaMult = Math.pow(0.97, stars - 1); // -3% SPA per Star
 
-        const finalDmg = Math.round(base.baseDmg * levelMult * evoMult * trait.dmgMult);
-        const finalRange = Math.round(base.baseRange * (instance.evolved ? 1.12 : 1.0) * trait.rangeMult);
-        const finalSpa = Number(Math.max(0.25, base.baseSpa * (instance.evolved ? 0.92 : 1.0) * trait.spaMult).toFixed(2));
-        const finalCrit = Math.min(0.95, base.critRate + (trait.critBonus || 0) + (instance.evolved ? 0.1 : 0));
+        const finalDmg = Math.round(base.baseDmg * levelMult * evoMult * starDmgMult * relic.dmgMult * trait.dmgMult);
+        const finalRange = Math.round(base.baseRange * (instance.evolved ? 1.12 : 1.0) * starRangeMult * relic.rangeMult * trait.rangeMult);
+        const finalSpa = Number(Math.max(0.22, base.baseSpa * (instance.evolved ? 0.92 : 1.0) * starSpaMult * relic.spaMult * trait.spaMult).toFixed(2));
+        const finalCrit = Math.min(0.95, base.critRate + (trait.critBonus || 0) + (relic.critBonus || 0) + (instance.evolved ? 0.1 : 0));
         const dps = Math.round((finalDmg * (1 + finalCrit * 0.75)) / finalSpa);
 
         return {
           base,
           trait,
+          relic,
+          stars,
           displayName: instance.evolved ? base.evoName : base.name,
           dmg: finalDmg,
           range: finalRange,
@@ -2620,6 +2810,8 @@
             instanceId: 'u_' + Date.now() + '_' + i + '_' + Math.random().toString(36).substring(2, 7),
             unitId: chosenUnit.id,
             level: 1,
+            stars: 1,
+            relicId: 'none',
             exp: 0,
             evolved: false,
             equipped: false,
@@ -2755,8 +2947,8 @@
           document.getElementById('autoSellLegendary').checked = !!GameStore.state.autoSell.Legendary;
         }
 
-        // Featured Banner Units (Including the 2 SECRET Monarchs)
-        const featuredIds = ['akatsuki', 'aethelgard', 'kaelen', 'yukimura', 'aurelia', 'vespera'];
+        // Featured Banner Units (Including the 2 SECRET Monarchs & Gilgamesh)
+        const featuredIds = ['akatsuki', 'aethelgard', 'gilgamesh', 'kaelen', 'yukimura', 'aurelia'];
         const bannerEl = document.getElementById('summonBannerShowcase');
         if (bannerEl) {
           bannerEl.innerHTML = featuredIds.map(id => {
@@ -2820,7 +3012,7 @@
     };
 
     /***************************************************************************
-     * MODULE 7: ASCENSION (LEVEL UP & EVOLUTION) SYSTEM
+     * MODULE 7: ASCENSION (LEVEL UP, STAR LIMIT BREAK ★1-★5, RELICS & EVOLUTION) SYSTEM
      ***************************************************************************/
     const UpgradeSystem = {
       selectedInstanceId: null,
@@ -2860,6 +3052,80 @@
         this.render();
         UI.renderLobbySquad();
         UI.toast(`Ascended unit +${gained} Levels!`, 'emerald');
+      },
+
+      // ĐỘT PHÁ SAO (Star Limit Break ★1 -> ★5 using Duplicate Unit OR Star Remnants)
+      limitBreakStar(useDuplicate = false) {
+        const unit = this.getSelectedUnit();
+        if (!unit) return;
+        unit.stars = unit.stars || 1;
+        if (unit.stars >= 5) {
+          UI.toast('Unit has already reached Maximum ★5 Star Limit Break!', 'gold');
+          return;
+        }
+
+        if (useDuplicate) {
+          const dupIdx = GameStore.state.units.findIndex(u =>
+            u.instanceId !== unit.instanceId &&
+            u.unitId === unit.unitId &&
+            !u.locked &&
+            !u.equipped
+          );
+          if (dupIdx === -1) {
+            SoundFX.play('error');
+            UI.toast('No unlocked, unequipped duplicate copy of this unit found!', 'rose');
+            return;
+          }
+          GameStore.state.units.splice(dupIdx, 1);
+        } else {
+          const reqRemnants = unit.stars * 8;
+          const reqGold = unit.stars * 3000;
+          if (GameStore.state.player.remnants < reqRemnants || GameStore.state.player.gold < reqGold) {
+            SoundFX.play('error');
+            UI.toast(`Need ${reqGold} Gold & ${reqRemnants} Star Remnants to Limit Break!`, 'rose');
+            return;
+          }
+          GameStore.state.player.remnants -= reqRemnants;
+          GameStore.state.player.gold -= reqGold;
+        }
+
+        unit.stars++;
+        SoundFX.play('secret');
+        UI.triggerScreenFlash('mythic');
+        SaveSystem.save();
+        UI.updateHud();
+        this.render();
+        UI.renderLobbySquad();
+        UI.toast(`LIMIT BREAK SUCCESS! Awakened to ★${unit.stars} Stars (+15% DMG, +5% RNG, -3% SPA)!`, 'gold');
+      },
+
+      // KHẮC THÁNH VẬT (Forge & Equip Sacred Relic)
+      equipRelic(relicId) {
+        const unit = this.getSelectedUnit();
+        if (!unit) return;
+        const relic = RELIC_DATABASE[relicId];
+        if (!relic) return;
+
+        if (unit.relicId === relicId) {
+          UI.toast('This Sacred Relic is already inscribed on this unit.', 'cyan');
+          return;
+        }
+
+        if (GameStore.state.player.gold < relic.costGold || GameStore.state.player.remnants < relic.costRemnants) {
+          SoundFX.play('error');
+          UI.toast(`Need ${relic.costGold} Gold & ${relic.costRemnants} Star Remnants to forge [${relic.name}]!`, 'rose');
+          return;
+        }
+
+        GameStore.state.player.gold -= relic.costGold;
+        GameStore.state.player.remnants -= relic.costRemnants;
+        unit.relicId = relicId;
+        SoundFX.play('upgrade');
+        SaveSystem.save();
+        UI.updateHud();
+        this.render();
+        UI.renderLobbySquad();
+        UI.toast(`Forged & Equipped Relic [${relic.name}]!`, 'emerald');
       },
 
       evolveUnit() {
@@ -2904,6 +3170,7 @@
         listEl.innerHTML = GameStore.state.units.map(u => {
           const stats = GameStore.getUnitCombatStats(u);
           const isSel = selected && selected.instanceId === u.instanceId;
+          const starsStr = '★'.repeat(stats.stars);
           return `
             <div onclick="UpgradeSystem.selectUnit('${u.instanceId}')" class="p-2.5 rounded-lg border cursor-pointer transition flex items-center gap-3 ${isSel ? 'bg-emerald-950/50 border-emerald-400' : 'bg-slate-900/70 border-slate-800 hover:border-slate-600'}">
               <div class="w-12 h-12 rounded overflow-hidden flex-shrink-0">
@@ -2911,7 +3178,7 @@
               </div>
               <div class="min-w-0 flex-1">
                 <div class="font-bold text-xs text-white truncate">${stats.displayName}</div>
-                <div class="text-[10px] font-tech text-emerald-300">Lv.${u.level} • ${stats.dps} DPS</div>
+                <div class="text-[10px] font-tech text-amber-300">${starsStr} • Lv.${u.level} • ${stats.dps} DPS</div>
               </div>
             </div>
           `;
@@ -2921,22 +3188,34 @@
         const stats = GameStore.getUnitCombatStats(selected);
         const nextLevelStats = GameStore.getUnitCombatStats({ ...selected, level: selected.level + 1 });
         const stepCost = selected.level * 120;
+        const stars = stats.stars;
+        const starDisplay = '★'.repeat(stars) + '☆'.repeat(5 - stars);
+        const dupCount = GameStore.state.units.filter(u =>
+          u.instanceId !== selected.instanceId &&
+          u.unitId === selected.unitId &&
+          !u.locked &&
+          !u.equipped
+        ).length;
 
         altarEl.innerHTML = `
-          <div class="grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
-            <div class="md:col-span-5 flex flex-col items-center text-center">
-              <div class="w-40 h-40 rounded-2xl overflow-hidden border-2 border-amber-400 shadow-2xl">
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-5 items-start">
+            <div class="md:col-span-4 flex flex-col items-center text-center">
+              <div class="w-36 h-36 rounded-2xl overflow-hidden border-2 border-amber-400 shadow-2xl relative">
                 ${ArtEngine.getCharacterPortraitSvg(selected.unitId, selected.evolved)}
+                <span class="absolute top-1.5 left-1.5 w-5 h-5">${ArtEngine.getElementSvg(stats.base.element)}</span>
               </div>
-              <span class="mt-2 px-2.5 py-0.5 rounded text-[10px] font-tech font-bold bg-slate-900 text-amber-300">${stats.base.rarity} • ${stats.base.placementType}</span>
-              <h3 class="font-display font-bold text-lg text-white mt-1">${stats.displayName}</h3>
-              <div class="text-xs font-tech text-fuchsia-300">Active Trait: ${stats.trait.name}</div>
+              <div class="mt-2 text-amber-400 font-tech text-sm tracking-widest font-bold">${starDisplay}</div>
+              <span class="mt-1 px-2.5 py-0.5 rounded text-[10px] font-tech font-bold bg-slate-900 text-amber-300">${stats.base.rarity} • ${stats.base.placementType}</span>
+              <h3 class="font-display font-bold text-base text-white mt-1">${stats.displayName}</h3>
+              <div class="text-xs font-tech text-fuchsia-300">Trait: ${stats.trait.name}</div>
+              <div class="text-[11px] font-tech text-cyan-300 mt-0.5">Relic: ${stats.relic.name}</div>
             </div>
 
-            <div class="md:col-span-7 space-y-4">
-              <div class="p-4 rounded-lg bg-slate-950/85 border border-slate-800">
-                <div class="flex justify-between items-center border-b border-slate-800 pb-2 mb-3">
-                  <span class="font-tech text-xs text-cyan-300">LEVEL ASCENSION (LV.${selected.level} → LV.${selected.level + 1})</span>
+            <div class="md:col-span-8 space-y-3.5">
+              <!-- 1. Level Ascension -->
+              <div class="p-3.5 rounded-lg bg-slate-950/85 border border-slate-800">
+                <div class="flex justify-between items-center border-b border-slate-800 pb-1.5 mb-2.5">
+                  <span class="font-tech text-xs text-cyan-300 font-bold">1. LEVEL ASCENSION (LV.${selected.level} → LV.${selected.level + 1})</span>
                   <span class="font-tech text-xs text-amber-300">Cost: ${stepCost} Gold</span>
                 </div>
                 <div class="grid grid-cols-3 gap-2 text-center text-xs font-tech">
@@ -2945,39 +3224,86 @@
                     <div class="text-white font-bold">${stats.dmg} → <span class="text-emerald-400">${nextLevelStats.dmg}</span></div>
                   </div>
                   <div class="p-2 rounded bg-slate-900">
-                    <div class="text-slate-400 text-[10px]">RANGE</div>
-                    <div class="text-white font-bold">${stats.range}</div>
+                    <div class="text-slate-400 text-[10px]">RANGE / SPA</div>
+                    <div class="text-white font-bold">${stats.range} / ${stats.spa}s</div>
                   </div>
                   <div class="p-2 rounded bg-slate-900">
                     <div class="text-slate-400 text-[10px]">TOTAL DPS</div>
                     <div class="text-white font-bold">${stats.dps} → <span class="text-emerald-400">${nextLevelStats.dps}</span></div>
                   </div>
                 </div>
-                <div class="mt-4 flex flex-wrap gap-3">
-                  <button onclick="UpgradeSystem.levelUpUnit(1)" class="clip-btn flex-1 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 text-slate-950 font-tech font-bold text-xs">
+                <div class="mt-3 flex flex-wrap gap-2">
+                  <button onclick="UpgradeSystem.levelUpUnit(1)" class="clip-btn flex-1 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-slate-950 font-tech font-bold text-xs">
                     LEVEL UP +1 (${stepCost} G)
                   </button>
-                  <button onclick="UpgradeSystem.levelUpUnit(5)" class="clip-btn flex-1 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-tech font-bold text-xs">
+                  <button onclick="UpgradeSystem.levelUpUnit(5)" class="clip-btn flex-1 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-tech font-bold text-xs">
                     LEVEL UP +5
+                  </button>
+                  <button onclick="UpgradeSystem.levelUpUnit(10)" class="clip-btn flex-1 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-tech font-bold text-xs">
+                    LEVEL UP +10
                   </button>
                 </div>
               </div>
 
-              <!-- Evolution Ritual Box -->
-              <div class="p-4 rounded-lg bg-slate-950/90 border-2 ${selected.evolved ? 'border-emerald-500/50' : 'border-rose-500/50'}">
+              <!-- 2. Star Limit Break (Đột Phá Sao ★1 -> ★5) -->
+              <div class="p-3.5 rounded-lg bg-slate-950/90 border border-amber-500/40">
                 <div class="flex items-center justify-between">
-                  <h4 class="font-display font-bold text-sm text-rose-300">ASTRAL EVOLUTION RITUAL</h4>
+                  <span class="font-display font-bold text-xs text-amber-300">2. ĐỘT PHÁ SAO — STAR LIMIT BREAK (${starDisplay})</span>
+                  <span class="text-[10px] font-tech text-emerald-300">+15% DMG, +5% RNG, -3% SPA / Star</span>
+                </div>
+                ${stars >= 5 ? `
+                  <p class="text-xs text-amber-200 mt-1.5 font-tech">★5 MAXIMUM STAR LIMIT BREAK ACHIEVED!</p>
+                ` : `
+                  <div class="mt-2.5 flex flex-wrap gap-2">
+                    <button onclick="UpgradeSystem.limitBreakStar(true)" class="clip-btn flex-1 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-tech font-bold text-[11px]">
+                      FUSE DUPLICATE COPY (OWNED: ${dupCount})
+                    </button>
+                    <button onclick="UpgradeSystem.limitBreakStar(false)" class="clip-btn flex-1 py-2 bg-rose-600 hover:bg-rose-500 text-white font-tech font-bold text-[11px]">
+                      USE ${stars * 3000}G + ${stars * 8} REMNANTS
+                    </button>
+                  </div>
+                `}
+              </div>
+
+              <!-- 3. Sacred Relic Inscription (Trang Bị Thánh Vật) -->
+              <div class="p-3.5 rounded-lg bg-slate-950/90 border border-cyan-500/40">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="font-display font-bold text-xs text-cyan-300">3. SACRED RELIC ARMORY (TRANG BỊ THÁNH VẬT)</span>
+                  <span class="text-[10px] font-tech text-slate-400">Active: ${stats.relic.name}</span>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  ${Object.values(RELIC_DATABASE).filter(r => r.id !== 'none').map(r => {
+                    const isEq = selected.relicId === r.id;
+                    return `
+                      <div class="p-2 rounded bg-slate-900/90 border ${isEq ? 'border-emerald-400' : 'border-slate-800'} flex flex-col justify-between text-[10px]">
+                        <div>
+                          <div class="font-bold text-white">${r.name}</div>
+                          <div class="text-slate-400 mt-0.5">${r.desc}</div>
+                        </div>
+                        <button onclick="UpgradeSystem.equipRelic('${r.id}')" ${isEq ? 'disabled' : ''} class="mt-2 py-1 px-2 rounded font-tech font-bold ${isEq ? 'bg-emerald-950 text-emerald-300' : 'bg-cyan-600 hover:bg-cyan-500 text-white'}">
+                          ${isEq ? 'EQUIPPED' : `FORGE (${r.costGold}G + ${r.costRemnants} Remnants)`}
+                        </button>
+                      </div>
+                    `;
+                  }).join('')}
+                </div>
+              </div>
+
+              <!-- 4. Evolution Ritual Box -->
+              <div class="p-3.5 rounded-lg bg-slate-950/90 border-2 ${selected.evolved ? 'border-emerald-500/50' : 'border-rose-500/50'}">
+                <div class="flex items-center justify-between">
+                  <h4 class="font-display font-bold text-xs text-rose-300">4. ASTRAL EVOLUTION RITUAL</h4>
                   <span class="text-[10px] font-tech px-2 py-0.5 rounded bg-rose-950 text-rose-300">${selected.evolved ? 'AWAKENED' : 'REQ: LV.15'}</span>
                 </div>
                 ${selected.evolved ? `
-                  <p class="text-xs text-emerald-300 mt-2">This unit has achieved its ultimate Awakened Evolution (+55% Base Stats, +12% Range, Awakened Halo).</p>
+                  <p class="text-xs text-emerald-300 mt-1.5">This unit has achieved its ultimate Awakened Evolution (+55% Base Stats, +12% Range, Awakened Halo).</p>
                 ` : `
                   <p class="text-xs text-slate-300 mt-1">Evolve into <strong class="text-amber-300">${stats.base.evoName}</strong> for +55% Base Damage, +12% Range, -8% SPA & Awakened Visual Aura.</p>
-                  <div class="mt-3 flex items-center justify-between">
+                  <div class="mt-2.5 flex items-center justify-between">
                     <div class="text-xs font-tech text-slate-300">
                       Cost: <span class="text-amber-300">${stats.base.evoCostGold} Gold</span> & <span class="text-rose-400">${stats.base.evoCostRemnants} Star Remnants</span>
                     </div>
-                    <button onclick="UpgradeSystem.evolveUnit()" class="clip-btn px-4 py-2 bg-gradient-to-r from-rose-600 to-amber-500 text-white font-tech font-bold text-xs">
+                    <button onclick="UpgradeSystem.evolveUnit()" class="clip-btn px-4 py-1.5 bg-gradient-to-r from-rose-600 to-amber-500 text-white font-tech font-bold text-xs">
                       EVOLVE UNIT
                     </button>
                   </div>
@@ -3184,11 +3510,12 @@
 
       // Battle State & Difficulty Configuration
       currentMap: null,
-      difficulty: 'normal', // normal | nightmare | hell
+      difficulty: 'normal', // normal | nightmare | hell | infinite
       difficultyConfig: {
-        normal: { name: 'NORMAL', hpMult: 1.35, speedMult: 1.0, rewardMult: 1.0, startMana: 520 },
-        nightmare: { name: 'ÁC MỘNG (NIGHTMARE)', hpMult: 2.6, speedMult: 1.18, rewardMult: 1.8, startMana: 480 },
-        hell: { name: 'ĐỊA NGỤC (HELL)', hpMult: 4.3, speedMult: 1.30, rewardMult: 3.0, startMana: 450 }
+        normal: { name: 'NORMAL', hpMult: 1.35, speedMult: 1.0, rewardMult: 1.0, startMana: 520, isInfinite: false },
+        nightmare: { name: 'ÁC MỘNG (NIGHTMARE)', hpMult: 2.6, speedMult: 1.18, rewardMult: 1.8, startMana: 480, isInfinite: false },
+        hell: { name: 'ĐỊA NGỤC (HELL)', hpMult: 4.3, speedMult: 1.30, rewardMult: 3.0, startMana: 450, isInfinite: false },
+        infinite: { name: 'VÔ TẬN (ENDLESS ∞)', hpMult: 1.75, speedMult: 1.12, rewardMult: 2.2, startMana: 600, isInfinite: true }
       },
       wave: 1,
       maxWaves: 12,
@@ -3199,6 +3526,8 @@
       maxTotalPlacedUnits: 12,
       gameSpeed: 1,
       autoWave: true,
+      autoSkill: false,
+      autoUpgrade: false,
 
       // Entities
       placedUnits: [],
@@ -3218,33 +3547,110 @@
       placingSquadInstance: null,
       pointerWorldPos: { x: 600, y: 360 },
       selectedPlacedUnitId: null,
+      touchState: {
+        startX: 0,
+        startY: 0,
+        lastX: 0,
+        lastY: 0,
+        moved: false,
+        pinchDist: 0,
+        isPinching: false
+      },
 
       initCanvas() {
         this.canvas = document.getElementById('battleCanvas');
         this.ctx = this.canvas.getContext('2d');
         window.addEventListener('resize', () => this.resize());
 
-        // Mouse & Touch Events for Free-Form Placement, Unit Selection & Camera Pan
+        // Mouse Events for Desktop
         this.canvas.addEventListener('mousemove', (e) => this.onPointerMove(e));
         this.canvas.addEventListener('mousedown', (e) => this.onPointerDown(e));
         window.addEventListener('mouseup', () => { this.camera.isDragging = false; });
 
+        // Mobile Touch Events: 1-Finger Pan / Ghost Drag, Tap-to-Select/Place & 2-Finger Pinch-to-Zoom
         this.canvas.addEventListener('touchstart', (e) => {
+          if (e.touches.length === 2) {
+            e.preventDefault();
+            this.touchState.isPinching = true;
+            this.touchState.pinchDist = Math.hypot(
+              e.touches[0].clientX - e.touches[1].clientX,
+              e.touches[0].clientY - e.touches[1].clientY
+            );
+            return;
+          }
           if (e.touches.length === 1) {
             const rect = this.canvas.getBoundingClientRect();
-            const clientX = e.touches[0].clientX - rect.left;
-            const clientY = e.touches[0].clientY - rect.top;
-            this.updatePointerWorldPos(clientX, clientY);
-            this.handleCanvasTap();
+            const cx = e.touches[0].clientX - rect.left;
+            const cy = e.touches[0].clientY - rect.top;
+            this.touchState.startX = cx;
+            this.touchState.startY = cy;
+            this.touchState.lastX = cx;
+            this.touchState.lastY = cy;
+            this.touchState.moved = false;
+            this.touchState.isPinching = false;
+            // Offset Y slightly upward when dragging placement on mobile so finger doesn't cover the unit
+            const offsetY = this.placingSquadInstance ? cy - 28 : cy;
+            this.updatePointerWorldPos(cx, offsetY);
           }
-        }, { passive: true });
+        }, { passive: false });
 
         this.canvas.addEventListener('touchmove', (e) => {
-          if (e.touches.length === 1) {
-            const rect = this.canvas.getBoundingClientRect();
-            this.updatePointerWorldPos(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top);
+          if (e.touches.length === 2) {
+            e.preventDefault();
+            const newDist = Math.hypot(
+              e.touches[0].clientX - e.touches[1].clientX,
+              e.touches[0].clientY - e.touches[1].clientY
+            );
+            if (this.touchState.pinchDist > 0) {
+              const delta = (newDist - this.touchState.pinchDist) * 0.004;
+              this.zoomCamera(delta);
+            }
+            this.touchState.pinchDist = newDist;
+            return;
           }
-        }, { passive: true });
+          if (e.touches.length === 1 && !this.touchState.isPinching) {
+            e.preventDefault();
+            const rect = this.canvas.getBoundingClientRect();
+            const cx = e.touches[0].clientX - rect.left;
+            const cy = e.touches[0].clientY - rect.top;
+            const totalDist = Math.hypot(cx - this.touchState.startX, cy - this.touchState.startY);
+            if (totalDist > 10) {
+              this.touchState.moved = true;
+            }
+
+            if (this.placingSquadInstance) {
+              // Drag the Ghost Preview smoothly across the battlefield on mobile
+              this.updatePointerWorldPos(cx, cy - 28);
+            } else if (this.touchState.moved) {
+              // Pan camera with 1 finger when not placing a unit
+              this.camera.x += cx - this.touchState.lastX;
+              this.camera.y += cy - this.touchState.lastY;
+            }
+            this.touchState.lastX = cx;
+            this.touchState.lastY = cy;
+          }
+        }, { passive: false });
+
+        this.canvas.addEventListener('touchend', (e) => {
+          if (this.touchState.isPinching) {
+            if (e.touches.length === 0) this.touchState.isPinching = false;
+            return;
+          }
+          if (!this.touchState.moved) {
+            // Single clean tap on mobile: place unit or select unit on map
+            this.updatePointerWorldPos(this.touchState.startX, this.touchState.startY);
+            this.handleCanvasTap(this.touchState.startX, this.touchState.startY, true);
+          } else if (this.placingSquadInstance) {
+            // Player dragged the ghost to position it; validate and inform them they can tap ✓ ĐẶT TẠI ĐÂY or tap the spot
+            const check = this.validatePlacement(this.pointerWorldPos.x, this.pointerWorldPos.y, this.placingSquadInstance);
+            const hintText = document.getElementById('placementHintText');
+            if (hintText) {
+              hintText.textContent = check.valid
+                ? 'Vị trí hợp lệ! Bấm [✓ ĐẶT TẠI ĐÂY] hoặc chạm lần nữa để đặt.'
+                : `Không thể đặt: ${check.reason}`;
+            }
+          }
+        });
 
         this.canvas.addEventListener('wheel', (e) => {
           e.preventDefault();
@@ -3256,6 +3662,24 @@
           if (e.key === 'Escape') {
             this.cancelPlacement();
             this.selectPlacedUnit(null);
+            return;
+          }
+          // Hotkeys 1-6 to quickly select & place equipped squad units
+          if (['1', '2', '3', '4', '5', '6'].includes(e.key)) {
+            const idx = parseInt(e.key, 10) - 1;
+            const equipped = GameStore.state.units.filter(u => u.equipped).slice(0, 6);
+            if (equipped[idx]) {
+              this.beginPlacement(equipped[idx].instanceId);
+            }
+            return;
+          }
+          // Hotkeys for currently selected deployed unit on the battlefield
+          if (this.selectedPlacedUnitId) {
+            const k = e.key.toLowerCase();
+            if (k === 'u') this.upgradePlacedUnit(this.selectedPlacedUnitId);
+            else if (k === 'f') this.castActiveSkill(this.selectedPlacedUnitId);
+            else if (k === 't') this.cycleTargeting(this.selectedPlacedUnitId);
+            else if (k === 'x') this.sellPlacedUnit(this.selectedPlacedUnitId);
           }
         });
       },
@@ -3276,7 +3700,7 @@
 
         this.active = true;
         this.wave = 1;
-        this.maxWaves = 12;
+        this.maxWaves = dCfg.isInfinite ? 999 : 12;
         this.nexusHp = 100;
         this.maxNexusHp = 100;
         this.mana = dCfg.startMana;
@@ -3292,6 +3716,16 @@
         UI.switchScreen('battle');
         this.resize();
         this.resetCamera();
+
+        // On mobile screens (< 768px), collapse Unit Manager initially so the full map is visible
+        const mgrPanel = document.getElementById('battleUnitManagerPanel');
+        if (mgrPanel) {
+          if (window.innerWidth < 768) {
+            mgrPanel.classList.add('hidden');
+          } else {
+            mgrPanel.classList.remove('hidden');
+          }
+        }
 
         // Ambient Environmental Particles
         for (let i = 0; i < 45; i++) {
@@ -3492,10 +3926,28 @@
         SoundFX.play('click');
         this.placingSquadInstance = inst;
         this.selectPlacedUnit(null);
+        // Hide Unit Manager on mobile while placing so player can see the entire battlefield
+        if (window.innerWidth < 768) {
+          const mgrPanel = document.getElementById('battleUnitManagerPanel');
+          if (mgrPanel) mgrPanel.classList.add('hidden');
+        }
         const hint = document.getElementById('placementHintBanner');
         const hintText = document.getElementById('placementHintText');
         hint.classList.remove('hidden');
-        hintText.textContent = `Deploying [${base.name}] (${base.placementType} Unit) — Click/Tap any valid ${base.placementType.toUpperCase()} terrain.`;
+        hintText.textContent = `Đang chọn [${base.name.split(':')[0]}] (${base.placementType}) — Chạm hoặc kéo đến vùng ${base.placementType.toUpperCase()} hợp lệ.`;
+      },
+
+      confirmMobilePlacement() {
+        if (!this.placingSquadInstance) return;
+        const wx = this.pointerWorldPos.x;
+        const wy = this.pointerWorldPos.y;
+        const check = this.validatePlacement(wx, wy, this.placingSquadInstance);
+        if (!check.valid) {
+          SoundFX.play('error');
+          UI.toast(check.reason, 'rose');
+          return;
+        }
+        this.deployUnitAt(wx, wy, this.placingSquadInstance, check.onHill);
       },
 
       cancelPlacement() {
@@ -3582,6 +4034,11 @@
 
       selectPlacedUnit(placedId) {
         this.selectedPlacedUnitId = placedId;
+        // On mobile, hide Unit Manager when inspecting a specific unit so panels don't overlap
+        if (placedId && window.innerWidth < 768) {
+          const mgr = document.getElementById('battleUnitManagerPanel');
+          if (mgr) mgr.classList.add('hidden');
+        }
         this.renderPlacedUnitInspector();
         this.renderUnitManager();
       },
@@ -3615,7 +4072,12 @@
       // IN-BATTLE UNIT MANAGER BATCH ACTIONS
       toggleUnitManager() {
         const panel = document.getElementById('battleUnitManagerPanel');
-        if (panel) panel.classList.toggle('hidden');
+        if (!panel) return;
+        const willShow = panel.classList.contains('hidden');
+        panel.classList.toggle('hidden');
+        if (willShow && window.innerWidth < 768) {
+          this.selectPlacedUnit(null);
+        }
       },
 
       upgradeAllAffordable() {
@@ -3711,7 +4173,7 @@
         const mult = u.rarity === 'Secret' ? 5.5 : 3.8;
         const inRange = this.enemies.filter(e => Math.hypot(e.x - u.x, e.y - u.y) <= u.range * 1.2);
         inRange.forEach(e => {
-          if (u.unitId === 'kaelen' || u.unitId === 'aethelgard') {
+        if (u.unitId === 'kaelen' || u.unitId === 'aethelgard' || u.unitId === 'gilgamesh') {
             e.shield = 0;
             e.armorShred = Math.max(e.armorShred || 0, 0.50);
           }
@@ -3873,14 +4335,15 @@
         const dock = document.getElementById('battleSquadDock');
         if (!dock) return;
         const equipped = GameStore.state.units.filter(u => u.equipped).slice(0, 6);
-        dock.innerHTML = equipped.map(u => {
+        dock.innerHTML = equipped.map((u, idx) => {
           const stats = GameStore.getUnitCombatStats(u);
           const count = this.placedUnits.filter(p => p.squadInstanceId === u.instanceId).length;
           const maxCount = stats.trait.isUnique ? 1 : (stats.base.rarity === 'Secret' ? 2 : 3);
           const canAfford = this.mana >= stats.base.cost && count < maxCount && this.placedUnits.length < this.maxTotalPlacedUnits;
           return `
-            <button onclick="BattleEngine.beginPlacement('${u.instanceId}')" class="relative w-16 sm:w-20 p-1.5 rounded-lg bg-slate-950/90 border-2 ${canAfford ? 'border-cyan-400 hover:-translate-y-1' : 'border-slate-700 opacity-60'} transition flex flex-col items-center">
+            <button onclick="BattleEngine.beginPlacement('${u.instanceId}')" class="relative w-16 sm:w-20 p-1.5 rounded-lg bg-slate-950/90 border-2 ${canAfford ? 'border-cyan-400 hover:-translate-y-1' : 'border-slate-700 opacity-60'} transition flex flex-col items-center" title="Hotkey [${idx + 1}]">
               <span class="absolute top-1 left-1 w-3.5 h-3.5">${ArtEngine.getElementSvg(stats.base.element)}</span>
+              <span class="absolute bottom-5 left-1 px-1 rounded bg-slate-900/90 border border-slate-700 text-[7px] font-tech text-cyan-200">[${idx + 1}]</span>
               <div class="w-11 h-11 sm:w-12 sm:h-12 rounded overflow-hidden">
                 ${ArtEngine.getCharacterPortraitSvg(u.unitId, u.evolved)}
               </div>
@@ -3964,15 +4427,15 @@
           });
         }
 
-        // Mid-Boss on Wave 6 & Final Calamity Boss on Wave 12
-        if (waveNum === 6 || waveNum === this.maxWaves) {
-          const isFinal = waveNum === this.maxWaves;
-          const bossMult = isFinal ? 18 : 8.5;
+        // Boss spawns on Wave 6, Wave 12, and every 6 waves in Infinite Mode!
+        if (waveNum % 6 === 0 || waveNum === this.maxWaves) {
+          const isMajorBoss = (waveNum % 12 === 0) || (waveNum === this.maxWaves);
+          const bossMult = isMajorBoss ? 18 : 8.5;
           const bossHp = Math.round(baseHp * bossMult);
           const bossShield = Math.round(bossHp * 0.35);
 
           this.spawnQueue.push({
-            name: isFinal ? this.currentMap.bossName : `Abyssal Lieutenant (Wave 6 Gatekeeper)`,
+            name: isMajorBoss ? `${this.currentMap.bossName} (W${waveNum})` : `Abyssal Gatekeeper (Wave ${waveNum})`,
             traitTag: 'BOSS • DISRUPTOR',
             element: this.currentWaveElement,
             hp: bossHp,
@@ -3983,12 +4446,12 @@
             armor: 0.40,
             armorShred: 0,
             regenRate: 0.015,
-            radius: isFinal ? 26 : 21,
+            radius: isMajorBoss ? 26 : 21,
             color: '#ff2a5f',
             isBoss: true,
             phase: 1,
             roarCooldown: 7.0,
-            bounty: isFinal ? 1200 : 450
+            bounty: isMajorBoss ? 1200 : 450
           });
         }
 
@@ -4005,14 +4468,38 @@
       },
 
       cycleSpeed() {
-        this.gameSpeed = this.gameSpeed === 1 ? 2 : this.gameSpeed === 2 ? 3 : 1;
+        this.gameSpeed = this.gameSpeed === 1 ? 2 : this.gameSpeed === 2 ? 3 : this.gameSpeed === 3 ? 4 : 1;
         document.getElementById('btnBattleSpeed').textContent = `${this.gameSpeed}X`;
+      },
+
+      toggleAutoUpgrade() {
+        this.autoUpgrade = !this.autoUpgrade;
+        const btn = document.getElementById('btnAutoUpgrade');
+        if (btn) {
+          btn.textContent = `AUTO UPG: ${this.autoUpgrade ? 'ON' : 'OFF'}`;
+          btn.className = this.autoUpgrade
+            ? 'px-2 py-0.5 rounded bg-emerald-500 text-slate-950 text-[10px] font-tech font-bold shadow'
+            : 'px-2 py-0.5 rounded bg-slate-800 text-[10px] font-tech font-bold text-emerald-300 border border-emerald-500/40';
+        }
+        UI.toast(`Unit Manager Auto-Upgrade: ${this.autoUpgrade ? 'ON' : 'OFF'}`, this.autoUpgrade ? 'emerald' : 'cyan');
       },
 
       toggleAutoWave() {
         this.autoWave = !this.autoWave;
         const btn = document.getElementById('btnAutoWave');
-        btn.textContent = `AUTO: ${this.autoWave ? 'ON' : 'OFF'}`;
+        btn.textContent = `AUTO WAVE: ${this.autoWave ? 'ON' : 'OFF'}`;
+      },
+
+      toggleAutoSkill() {
+        this.autoSkill = !this.autoSkill;
+        const btn = document.getElementById('btnAutoSkill');
+        if (btn) {
+          btn.textContent = `AUTO SKILL: ${this.autoSkill ? 'ON' : 'OFF'}`;
+          btn.className = this.autoSkill
+            ? 'clip-btn px-2.5 py-1 bg-fuchsia-600 text-white border border-fuchsia-300 font-tech font-bold text-xs shadow'
+            : 'clip-btn px-2.5 py-1 bg-fuchsia-600/30 border border-fuchsia-400/50 text-fuchsia-200 font-tech font-bold text-xs';
+        }
+        UI.toast(`Auto-Cast Ultimate Skills: ${this.autoSkill ? 'ON' : 'OFF'}`, this.autoSkill ? 'emerald' : 'cyan');
       },
 
       updateBattleHud() {
@@ -4022,7 +4509,7 @@
         if (diffBadge) diffBadge.textContent = dCfg.name;
 
         document.getElementById('battleWaveNum').textContent = this.wave;
-        document.getElementById('battleWaveMax').textContent = this.maxWaves;
+        document.getElementById('battleWaveMax').textContent = dCfg.isInfinite ? '∞' : this.maxWaves;
 
         const elemBadge = document.getElementById('battleWaveElemBadge');
         if (elemBadge && this.currentWaveElement) {
@@ -4221,12 +4708,22 @@
             if (u.trait.goldMult) waveBonus = Math.round(waveBonus * u.trait.goldMult);
           });
           this.mana += waveBonus;
+
+          // Milestone reward every 5 waves in Infinite Mode
+          const dCfg = this.difficultyConfig[this.difficulty] || this.difficultyConfig.normal;
+          if (dCfg.isInfinite && this.wave % 5 === 0) {
+            GameStore.state.player.gems += 75;
+            GameStore.state.player.shards += 2;
+            SaveSystem.save();
+            UI.toast(`Infinite Milestone (Wave ${this.wave}): +75 Astral Gems & +2 Trait Shards!`, 'gold');
+          }
+
           this.floatingTexts.push({ x: this.worldW / 2, y: 90, text: `WAVE ${this.wave} CLEARED! +${waveBonus} ¥`, color: '#34d399', life: 1.5 });
           this.updateBattleHud();
           this.renderSquadDock();
           this.renderUnitManager();
 
-          if (this.wave >= this.maxWaves) {
+          if (!dCfg.isInfinite && this.wave >= this.maxWaves) {
             this.endBattle(true);
             return;
           } else {
@@ -4236,19 +4733,38 @@
               document.getElementById('btnNextWavePrompt').classList.remove('hidden');
             }
           }
-        } else if (this.waveState === 'intermission') {
+        }
+
+        // 3b. Intermission Countdown Between Waves
+        if (this.waveState === 'intermission') {
           this.intermissionTimer -= dt;
           if (this.intermissionTimer <= 0) {
             this.prepareWave(this.wave + 1);
           }
         }
 
-        // 4. Placed Units Stun Recovery, Targeting & Attacks
+        // 4. Placed Units Stun Recovery, Auto-Upgrade, Auto-Skill, Targeting & Attacks
+        if (this.autoUpgrade && this.placedUnits.length > 0) {
+          const nextUpgUnit = this.placedUnits
+            .filter(u => u.tier < 5 && this.mana >= this.getUpgradeCost(u))
+            .sort((a, b) => this.getUpgradeCost(a) - this.getUpgradeCost(b))[0];
+          if (nextUpgUnit) {
+            this.upgradePlacedUnit(nextUpgUnit.id);
+          }
+        }
+
         for (const u of this.placedUnits) {
           if (u.skillCooldown > 0) u.skillCooldown = Math.max(0, u.skillCooldown - dt);
           if (u.stunTimer > 0) {
             u.stunTimer = Math.max(0, u.stunTimer - dt);
             continue;
+          }
+          // Auto-Skill check if toggled ON and enemies are within skill range
+          if (this.autoSkill && u.skillCooldown <= 0) {
+            const hasEnemyInRange = this.enemies.some(e => Math.hypot(e.x - u.x, e.y - u.y) <= u.range);
+            if (hasEnemyInRange) {
+              this.castActiveSkill(u.id, true);
+            }
           }
           u.attackCooldown -= dt;
           if (u.attackCooldown <= 0) {
@@ -4419,6 +4935,11 @@
             // Vespera [Soul Reaper]: +4% current HP bonus damage
             dmg += Math.min(u.dmg * 3, Math.round(e.hp * 0.04));
           }
+          if (u.unitId === 'gilgamesh') {
+            // Gilgamesh [Gate of Babylon]: Pierces 45% Armor & deals +50% Bonus DMG to Bosses
+            e.armorShred = Math.max(e.armorShred || 0, 0.45);
+            if (e.isBoss) dmg = Math.round(dmg * 1.50);
+          }
           if (u.unitId === 'yukimura') {
             // Yukimura [Absolute Zero]: +60% DMG to slowed/frozen enemies & freeze every 4th strike
             if (e.slowTimer > 0 || e.freezeTimer > 0) dmg = Math.round(dmg * 1.60);
@@ -4570,17 +5091,26 @@
           `;
         } else {
           SoundFX.play('error');
-          const consolationGold = this.wave * 60;
+          const dCfg = this.difficultyConfig[this.difficulty] || this.difficultyConfig.normal;
+          const wavesSurvived = Math.max(0, this.wave - 1);
+          const consolationGold = Math.round(wavesSurvived * 95 * dCfg.rewardMult);
+          const bonusGems = dCfg.isInfinite ? wavesSurvived * 12 : 0;
+          const bonusShards = dCfg.isInfinite ? Math.floor(wavesSurvived / 3) : 0;
           GameStore.state.player.gold += consolationGold;
+          GameStore.state.player.gems += bonusGems;
+          GameStore.state.player.shards += bonusShards;
           SaveSystem.save();
 
           card.innerHTML = `
-            <span class="px-3 py-1 rounded bg-rose-500/20 text-rose-300 font-tech text-xs font-bold">NEXUS SHATTERED</span>
-            <h2 class="font-display font-black text-3xl text-rose-400">DEFEAT</h2>
-            <p class="text-xs text-slate-300">The enemy vanguard overwhelmed the Nexus on Wave ${this.wave}. Upgrade your units or reroll Traits in the Shrine!</p>
-            <div class="p-3 rounded bg-slate-950 text-xs font-tech text-amber-300">Consolation Bounty: +${consolationGold} Gold</div>
+            <span class="px-3 py-1 rounded bg-rose-500/20 text-rose-300 font-tech text-xs font-bold">${dCfg.isInfinite ? 'ENDLESS RUN COMPLETED' : 'NEXUS SHATTERED'}</span>
+            <h2 class="font-display font-black text-3xl ${dCfg.isInfinite ? 'text-fuchsia-400' : 'text-rose-400'}">${dCfg.isInfinite ? `WAVE ${this.wave} REACHED` : 'DEFEAT'}</h2>
+            <p class="text-xs text-slate-300">You survived ${wavesSurvived} wave(s) on ${dCfg.name} in ${this.currentMap.name}!</p>
+            <div class="p-3 rounded bg-slate-950 text-xs font-tech text-amber-300 space-y-1">
+              <div>Battle Bounty: +${consolationGold.toLocaleString()} Gold</div>
+              ${dCfg.isInfinite ? `<div class="text-cyan-300">Endless Bonus: +${bonusGems} Gems & +${bonusShards} Trait Shards</div>` : ''}
+            </div>
             <div class="flex gap-3 justify-center pt-2">
-              <button onclick="BattleEngine.startBattle('${this.currentMap.id}')" class="clip-btn px-5 py-2.5 bg-rose-600 text-white font-tech font-bold text-xs">RETRY REALM</button>
+              <button onclick="BattleEngine.startBattle('${this.currentMap.id}', '${this.difficulty}')" class="clip-btn px-5 py-2.5 bg-rose-600 text-white font-tech font-bold text-xs">RETRY REALM</button>
               <button onclick="BattleEngine.leaveBattle()" class="clip-btn px-5 py-2.5 bg-slate-800 text-white font-tech font-bold text-xs">RETURN TO LOBBY</button>
             </div>
           `;
@@ -4909,6 +5439,15 @@
         this.initLobbyBgCanvas();
         BattleEngine.initCanvas();
         this.refreshAll();
+      },
+
+      toggleFullscreen() {
+        SoundFX.play('click');
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen?.().catch(() => {});
+        } else {
+          document.exitFullscreen?.().catch(() => {});
+        }
       },
 
       renderElementalChartWidget() {
@@ -5368,7 +5907,7 @@
       setMapDifficulty(diff) {
         SoundFX.play('click');
         this.selectedDifficulty = diff;
-        ['normal', 'nightmare', 'hell'].forEach(d => {
+        ['normal', 'nightmare', 'hell', 'infinite'].forEach(d => {
           const btn = document.getElementById('diffBtn-' + d);
           if (!btn) return;
           if (d === diff) {
