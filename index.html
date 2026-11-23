@@ -4,271 +4,471 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Robux Trading Dashboard</title>
+<title>Robux Trade Manager</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-
-:root {
-  --bg:#080d18;
-  --panel:#111a2b;
-  --panel2:#172238;
-  --border:#25334a;
-  --green:#00e5a0;
-  --red:#ff5470;
-  --blue:#5595ff;
-  --muted:#8493aa;
-  --white:#edf4ff;
+:root{
+ --bg:#07111e;--glass:rgba(19,34,54,.76);
+ --glass2:#14243a;--border:rgba(135,170,210,.16);
+ --green:#00e5a0;--blue:#56a0ff;--red:#ff637d;
+ --text:#edf5ff;--muted:#8497ae;
 }
 *{box-sizing:border-box}
 body{
-  margin:0;background:var(--bg);color:var(--white);
-  font-family:Inter,Arial,sans-serif;
-  padding:24px 16px;
+ margin:0;background:radial-gradient(ellipse at 10% 0%,#143052 0%,transparent 38%),radial-gradient(ellipse at 90% 80%,#102d36 0%,transparent 35%),var(--bg);
+ color:var(--text);font-family:Inter,Arial,sans-serif;min-height:100vh;
 }
-.container{max-width:1050px;margin:auto}
-header{
-  display:flex;justify-content:space-between;
-  align-items:center;margin-bottom:26px;gap:12px;
-}
-.logo{font-size:21px;font-weight:800;letter-spacing:-1px}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.app{max-width:1250px;margin:auto;padding:22px}
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:25px;gap:12px}
+.logo{font-weight:800;font-size:22px;letter-spacing:-1px}
 .logo span{color:var(--green)}
-.status{color:var(--green);font-size:11px}
-h1{font-size:27px;margin:0 0 7px}
-.subtitle{color:var(--muted);font-size:13px;margin-bottom:24px}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}
-.panel{
-  background:var(--panel);border:1px solid var(--border);
-  border-radius:13px;padding:19px;margin-bottom:15px;
+.live{font-size:11px;color:var(--green);letter-spacing:1px}
+.layout{display:grid;grid-template-columns:205px 1fr;gap:20px}
+.sidebar,.panel,.stat{
+ background:var(--glass);backdrop-filter:blur(18px);
+ border:1px solid var(--border);border-radius:15px;
+ box-shadow:0 12px 35px rgba(0,0,0,.15);
 }
-.panel-title{
-  font-size:12px;color:var(--muted);
-  font-weight:700;text-transform:uppercase;
-  letter-spacing:1px;margin-bottom:17px;
+.sidebar{padding:13px;height:max-content;position:sticky;top:15px}
+.nav{
+ width:100%;padding:13px 12px;margin:3px 0;border:0;
+ background:transparent;color:var(--muted);text-align:left;
+ border-radius:9px;font-size:12px;font-weight:600;
 }
-.metric-label{font-size:12px;color:var(--muted)}
-.metric{font-size:25px;font-weight:800;margin-top:10px}
-.green{color:var(--green)}
-.blue{color:var(--blue)}
-.red{color:var(--red)}
-.inputs{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
-label{display:block;font-size:12px;color:var(--muted);margin-bottom:8px}
-input{
-  width:100%;background:#0b1322;color:white;
-  border:1px solid var(--border);border-radius:8px;
-  padding:12px;font-size:15px;outline:none;
+.nav.active,.nav:hover{background:rgba(0,229,160,.11);color:var(--green)}
+.content{min-width:0}
+.page{display:none}
+.page.active{display:block}
+.heading{margin:0 0 6px;font-size:25px}
+.sub{font-size:12px;color:var(--muted);margin-bottom:22px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:14px}
+.stat{padding:17px;min-width:0}
+.stat-label{font-size:10px;color:var(--muted);letter-spacing:1px;font-weight:700}
+.stat-value{font-size:clamp(17px,2vw,25px);font-weight:800;margin-top:12px;overflow-wrap:anywhere}
+.green{color:var(--green)}.blue{color:var(--blue)}.red{color:var(--red)}
+.panel{padding:19px;margin-bottom:15px;min-width:0}
+.panel-title{font-size:12px;font-weight:800;letter-spacing:1px;color:#b9cce3;margin-bottom:17px}
+.row{display:flex;gap:12px;flex-wrap:wrap}
+.field{flex:1;min-width:145px}
+label{display:block;font-size:11px;color:var(--muted);margin-bottom:8px}
+input,select{
+ width:100%;padding:12px;background:rgba(4,13,26,.7);
+ border:1px solid var(--border);border-radius:8px;
+ color:var(--text);outline:none;font-size:13px;
 }
-input:focus{border-color:var(--green)}
-small{display:block;color:var(--muted);font-size:10px;margin-top:6px}
-button{
-  background:var(--green);color:#06150f;border:0;
-  padding:12px 17px;border-radius:8px;
-  font-weight:800;cursor:pointer;
+input:focus,select:focus{border-color:var(--green)}
+.btn{
+ padding:11px 15px;border:0;border-radius:8px;
+ background:var(--green);color:#031a12;font-size:12px;font-weight:800;
 }
-button.secondary{
-  background:var(--panel2);color:white;
-  border:1px solid var(--border);
-}
-.actions{display:flex;gap:9px;margin-top:17px;flex-wrap:wrap}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th,td{padding:13px 9px;text-align:left;border-bottom:1px solid var(--border)}
-th{color:var(--muted);font-weight:500}
-td:last-child,th:last-child{text-align:right}
-.progress{
-  height:7px;background:#25334a;border-radius:10px;
-  overflow:hidden;margin-top:13px
-}
-.bar{height:100%;background:var(--green);width:0%;transition:.3s}
-.note{font-size:11px;color:var(--muted);line-height:1.7}
-footer{text-align:center;color:#58677e;font-size:11px;margin-top:25px}
-@media(max-width:650px){
-  body{padding:16px 12px}
-  .grid{grid-template-columns:repeat(2,1fr)}
-  .metric{font-size:19px}
-  .inputs{grid-template-columns:1fr}
-  h1{font-size:23px}
-  .panel{padding:14px}
-  table{font-size:11px}
+.btn2{background:#20344e;color:white;border:1px solid var(--border)}
+.btn-danger{background:#522535;color:#ffb3c0}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}
+.chart{height:190px;display:flex;align-items:end;gap:8px;padding:12px 0 0}
+.chart-item{flex:1;min-width:0;text-align:center;height:100%;display:flex;flex-direction:column;justify-content:end;align-items:center;gap:8px}
+.chart-bar{width:min(35px,70%);border-radius:5px 5px 0 0;background:linear-gradient(0deg,#00a87b,#00e5a0);min-height:2px;transition:.3s}
+.chart-label{font-size:9px;color:var(--muted)}
+.chart-value{font-size:9px;color:var(--green)}
+table{width:100%;border-collapse:collapse;font-size:11px;white-space:nowrap}
+th,td{padding:12px 9px;text-align:left;border-bottom:1px solid var(--border)}
+th{color:var(--muted);font-weight:600}
+td{color:#dce8f7}
+.table-wrap{overflow-x:auto}
+.tag{padding:5px 8px;border-radius:20px;font-size:10px}
+.paid{background:#0c473b;color:var(--green)}
+.pending{background:#493a20;color:#ffce79}
+.link{color:var(--blue);text-decoration:none}
+.muted{color:var(--muted);font-size:11px;line-height:1.7}
+.empty{text-align:center;padding:25px;color:var(--muted);font-size:12px}
+footer{text-align:center;color:#52677f;font-size:10px;padding:20px}
+@media(max-width:750px){
+ .app{padding:13px}
+ .layout{grid-template-columns:1fr}
+ .sidebar{position:static;display:flex;overflow-x:auto;gap:3px;padding:7px}
+ .nav{width:auto;white-space:nowrap;padding:11px}
+ .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .heading{font-size:22px}
+ .panel{padding:14px}
 }
 </style>
 </head>
 <body>
-<div class="container">
-
+<div class="app">
 <header>
-  <div class="logo">ROBUX<span>TRADE.</span></div>
-  <div class="status">● LIVE CALCULATOR</div>
+ <div class="logo">ROBUX<span>TRADE.</span></div>
+ <div class="live">● TRADING SYSTEM ONLINE</div>
 </header>
 
-<h1>Trading Dashboard</h1>
-<div class="subtitle">Robux Investment & Profit Management</div>
+<div class="layout">
+<aside class="sidebar">
+ <button class="nav active" data-page="dashboard">◈ Dashboard</button>
+ <button class="nav" data-page="transactions">▤ Giao dịch</button>
+ <button class="nav" data-page="analysis">▥ Phân tích</button>
+ <button class="nav" data-page="settings">⚙ Cài đặt vốn</button>
+</aside>
 
-<div class="panel">
-  <div class="panel-title">01 / Investment Configuration</div>
-  <div class="inputs">
-    <div>
-      <label>Rate nhập (VNĐ / 1.000 Robux)</label>
-      <input id="rate" type="number" value="123000" min="0">
-      <small>Ví dụ: Rate 123 = 123.000đ</small>
-    </div>
-    <div>
-      <label>Số lượng Robux nhập</label>
-      <input id="robux" type="number" value="7600" min="0">
-      <small>Tổng Robux đầu vào</small>
-    </div>
-    <div>
-      <label>Giá bán mỗi Game Pass (VNĐ)</label>
-      <input id="sell" type="number" value="20000" min="0">
-      <small>Có thể nhập 15.000 – 20.000 hoặc tùy ý</small>
-    </div>
-    <div>
-      <label>Robux mỗi Game Pass</label>
-      <input id="gp" type="number" value="99" min="1">
-      <small>Số Robux yêu cầu cho một GP</small>
-    </div>
-  </div>
-  <div class="actions">
-    <button onclick="calculate()">CALCULATE ↗</button>
-    <button class="secondary" onclick="resetData()">RESET</button>
-  </div>
-</div>
+<main class="content">
+
+<!-- DASHBOARD -->
+<section class="page active" id="dashboard">
+<h1 class="heading">Overview</h1>
+<div class="sub">Tổng quan tình hình kinh doanh Robux của bạn</div>
 
 <div class="grid">
-  <div class="panel">
-    <div class="metric-label">TOTAL INVESTMENT</div>
-    <div class="metric blue" id="capital">0đ</div>
-  </div>
-  <div class="panel">
-    <div class="metric-label">TOTAL REVENUE</div>
-    <div class="metric green" id="revenue">0đ</div>
-  </div>
-  <div class="panel">
-    <div class="metric-label">NET PROFIT</div>
-    <div class="metric green" id="profit">0đ</div>
-  </div>
-  <div class="panel">
-    <div class="metric-label">GAME PASSES</div>
-    <div class="metric" id="quantity">0</div>
-  </div>
-  <div class="panel">
-    <div class="metric-label">REMAINING ROBUX</div>
-    <div class="metric" id="remaining">0</div>
-  </div>
-  <div class="panel">
-    <div class="metric-label">ROI / PROFIT RATE</div>
-    <div class="metric green" id="roi">0%</div>
-  </div>
+ <div class="stat"><div class="stat-label">TOTAL CAPITAL</div><div class="stat-value blue" id="capital">0đ</div></div>
+ <div class="stat"><div class="stat-label">PAID REVENUE</div><div class="stat-value green" id="revenue">0đ</div></div>
+ <div class="stat"><div class="stat-label">REALIZED PROFIT</div><div class="stat-value green" id="profit">0đ</div></div>
+ <div class="stat"><div class="stat-label">ROBUX INVENTORY</div><div class="stat-value" id="stock">0</div></div>
+ <div class="stat"><div class="stat-label">SOLD GAME PASSES</div><div class="stat-value" id="sold">0</div></div>
+ <div class="stat"><div class="stat-label">ROI</div><div class="stat-value green" id="roi">0%</div></div>
 </div>
 
 <div class="panel">
-  <div class="panel-title">02 / Profit Performance</div>
-  <div style="display:flex;justify-content:space-between;gap:10px">
-    <span class="metric-label">Profit Margin</span>
-    <strong id="margin" class="green">0%</strong>
-  </div>
-  <div class="progress"><div class="bar" id="bar"></div></div>
-  <p class="note" id="summary">Nhập thông tin để xem kết quả đầu tư.</p>
+ <div class="panel-title">01 / FINANCIAL PERFORMANCE</div>
+ <div class="muted">Biểu đồ doanh thu đã thanh toán theo tháng</div>
+ <div class="chart" id="chart"></div>
 </div>
 
 <div class="panel">
-  <div class="panel-title">03 / Selling Price Analysis</div>
-  <table>
-    <thead>
-      <tr>
-        <th>Giá bán / GP</th>
-        <th>Doanh thu</th>
-        <th>Lợi nhuận</th>
-      </tr>
-    </thead>
-    <tbody id="priceTable"></tbody>
-  </table>
+ <div class="panel-title">02 / QUICK CALCULATOR</div>
+ <div class="row">
+  <div class="field"><label>Rate (VNĐ / Robux)</label><input id="quickRate" type="number" value="140"></div>
+  <div class="field"><label>Số Robux nhập</label><input id="quickRobux" type="number" value="1149"></div>
+  <div class="field"><label>Giá bán / GP</label><input id="quickPrice" type="number" value="20000"></div>
+ </div>
+ <div class="grid" style="margin-top:15px;margin-bottom:0">
+  <div class="stat"><div class="stat-label">TOTAL COST</div><div class="stat-value blue" id="qCost">0đ</div></div>
+  <div class="stat"><div class="stat-label">POSSIBLE GP</div><div class="stat-value" id="qQty">0</div></div>
+  <div class="stat"><div class="stat-label">ESTIMATED PROFIT</div><div class="stat-value green" id="qProfit">0đ</div></div>
+ </div>
+ <p class="muted">Dự báo bán toàn bộ số Robux nhập. Giá vốn được tính theo Rate bạn thiết lập.</p>
+</div>
+</section>
+
+<!-- TRANSACTIONS -->
+<section class="page" id="transactions">
+<h1 class="heading">Transaction Manager</h1>
+<div class="sub">Sổ theo dõi khách hàng và giao dịch như Excel</div>
+
+<div class="panel">
+ <div class="panel-title">NEW TRANSACTION / THÊM GIAO DỊCH</div>
+ <div class="row">
+  <div class="field"><label>Tên khách hàng</label><input id="customer" placeholder="Tên khách"></div>
+  <div class="field"><label>Facebook / Zalo</label><select id="contactType"><option>Facebook</option><option>Zalo</option><option>Khác</option></select></div>
+  <div class="field"><label>Link Facebook / Zalo / SĐT</label><input id="contact" placeholder="https://... hoặc số điện thoại"></div>
+ </div>
+ <div class="row" style="margin-top:14px">
+  <div class="field"><label>Số lượng Game Pass</label><input id="orderQty" type="number" min="1" value="1"></div>
+  <div class="field"><label>Giá bán mỗi GP (VNĐ)</label><input id="orderPrice" type="number" value="20000"></div>
+  <div class="field"><label>Trạng thái thanh toán</label><select id="payment"><option value="paid">Đã thanh toán</option><option value="pending">Chưa thanh toán</option></select></div>
+ </div>
+ <div class="field" style="margin-top:14px"><label>Ghi chú</label><input id="note" placeholder="Mã đơn, nội dung giao dịch..."></div>
+ <div class="actions"><button class="btn" id="addOrder">+ LƯU GIAO DỊCH</button></div>
+ <p class="muted">Mỗi GP tiêu thụ số Robux được thiết lập trong phần cài đặt. Khi thêm đơn, Robux tồn kho sẽ tự động giảm.</p>
 </div>
 
 <div class="panel">
-  <div class="panel-title">04 / Transaction Details</div>
-  <table>
-    <tbody>
-      <tr><td>Giá vốn / Robux</td><td id="unitCost">0đ</td></tr>
-      <tr><td>Giá vốn / Game Pass</td><td id="gpCost">0đ</td></tr>
-      <tr><td>Lợi nhuận / Game Pass</td><td id="gpProfit">0đ</td></tr>
-      <tr><td>Tổng Robux sử dụng</td><td id="used">0</td></tr>
-      <tr><td>Tổng vốn đầu tư</td><td id="capital2">0đ</td></tr>
-    </tbody>
-  </table>
+ <div class="panel-title">CUSTOMER DATABASE</div>
+ <div class="row" style="margin-bottom:14px">
+  <div class="field"><input id="search" placeholder="Tìm tên khách, Facebook, Zalo..."></div>
+  <button class="btn btn2" id="export">↓ EXPORT EXCEL (CSV)</button>
+ </div>
+ <div class="table-wrap">
+ <table>
+ <thead><tr><th>Ngày</th><th>Khách hàng</th><th>Liên hệ</th><th>Số GP</th><th>Doanh thu</th><th>Thanh toán</th><th>Thao tác</th></tr></thead>
+ <tbody id="orders"></tbody>
+ </table>
+ </div>
+ <div class="muted" style="margin-top:12px">Xóa giao dịch sẽ tự động hoàn lại Robux tồn kho trong hệ thống.</div>
 </div>
+</section>
 
-<p class="note">
-  * Mô hình giả định mỗi GP tiêu thụ đúng số Robux đã nhập và người bán nhận đủ số Robux đó.
-  Chưa tính phí Roblox, phí giao dịch hoặc chi phí thanh toán khác.
-</p>
+<!-- ANALYSIS -->
+<section class="page" id="analysis">
+<h1 class="heading">Market Analytics</h1>
+<div class="sub">Phân tích biên lợi nhuận và giá bán</div>
+<div class="panel">
+ <div class="panel-title">PRICE SIMULATOR</div>
+ <div class="row">
+  <div class="field"><label>Giá bán GP (VNĐ)</label><input id="simPrice" type="number" value="20000"></div>
+  <div class="field"><label>Robux mỗi GP</label><input id="simGP" type="number" value="99"></div>
+ </div>
+ <div class="grid" style="margin-top:15px">
+  <div class="stat"><div class="stat-label">COST / GP</div><div class="stat-value blue" id="simCost">0đ</div></div>
+  <div class="stat"><div class="stat-label">PROFIT / GP</div><div class="stat-value green" id="simProfit">0đ</div></div>
+  <div class="stat"><div class="stat-label">BREAK EVEN PRICE</div><div class="stat-value" id="breakEven">0đ</div></div>
+ </div>
+</div>
+<div class="panel">
+ <div class="panel-title">PRICE COMPARISON</div>
+ <div class="table-wrap"><table>
+ <thead><tr><th>Giá bán</th><th>Doanh thu dự kiến</th><th>Lợi nhuận dự kiến</th><th>ROI</th></tr></thead>
+ <tbody id="comparison"></tbody>
+ </table></div>
+ <p class="muted">Mô phỏng trên số Robux tồn kho ban đầu, không phải số lượng GP đã bán.</p>
+</div>
+</section>
 
-<footer>ROBUX TRADE DASHBOARD · FINANCIAL TRACKING</footer>
+<!-- SETTINGS -->
+<section class="page" id="settings">
+<h1 class="heading">Capital Settings</h1>
+<div class="sub">Thiết lập vốn nhập và thông số kinh doanh</div>
+<div class="panel">
+ <div class="panel-title">ROBUX INVENTORY & RATE</div>
+ <div class="row">
+  <div class="field"><label>Rate nhập (VNĐ / 1 Robux)</label><input id="rate" type="number" value="140"></div>
+  <div class="field"><label>Tổng Robux nhập ban đầu</label><input id="initialStock" type="number" value="1149"></div>
+  <div class="field"><label>Robux mỗi Game Pass</label><input id="gpSize" type="number" value="99"></div>
+  <div class="field"><label>Giá bán mặc định / GP</label><input id="defaultPrice" type="number" value="20000"></div>
+ </div>
+ <div class="actions"><button class="btn" id="saveSettings">SAVE SETTINGS</button></div>
+</div>
+<div class="panel">
+ <div class="panel-title">CAPITAL BREAKDOWN</div>
+ <table>
+ <tbody>
+ <tr><td>Rate</td><td id="sRate">140đ</td></tr>
+ <tr><td>Robux nhập</td><td id="sStock">1.149</td></tr>
+ <tr><td>Tổng vốn nhập</td><td id="sCapital">160.860đ</td></tr>
+ <tr><td>Giá vốn mỗi GP</td><td id="sGP">13.860đ</td></tr>
+ <tr><td>Robux đã bán</td><td id="sUsed">0</td></tr>
+ <tr><td>Robux còn lại</td><td id="sRemain">1.149</td></tr>
+ </tbody>
+ </table>
+ <p class="muted">Rate 140 nghĩa là mỗi Robux có giá vốn 140 VNĐ. Ví dụ 1.000 Robux = 140.000 VNĐ. Đây là công thức cố định trong hệ thống.</p>
+</div>
+<div class="panel">
+ <div class="panel-title">DATA MANAGEMENT</div>
+ <p class="muted">Dữ liệu được lưu trên trình duyệt bằng Local Storage. Không tự đồng bộ giữa các thiết bị. Hãy xuất CSV định kỳ để sao lưu.</p>
+ <div class="actions">
+  <button class="btn btn2" id="backup">BACKUP JSON</button>
+  <button class="btn btn-danger" id="clear">XÓA TOÀN BỘ DỮ LIỆU</button>
+ </div>
+</div>
+</section>
+</main>
+</div>
+<footer>ROBUX TRADE MANAGER · GLASS TRADING INTERFACE</footer>
 </div>
 
 <script>
-const $ = id => document.getElementById(id);
-const money = n => Math.round(n).toLocaleString('vi-VN') + 'đ';
-const number = n => n.toLocaleString('vi-VN');
+const $=id=>document.getElementById(id);
+const fmt=n=>Math.round(n).toLocaleString('vi-VN')+'đ';
+const num=n=>Number(n).toLocaleString('vi-VN');
+const today=()=>new Date().toISOString().slice(0,10);
 
-function calculate(){
-  const rate = Math.max(0,Number($('rate').value)||0);
-  const robux = Math.max(0,Number($('robux').value)||0);
-  const sell = Math.max(0,Number($('sell').value)||0);
-  const gp = Math.max(1,Number($('gp').value)||1);
+let config={rate:140,initialStock:1149,gpSize:99,defaultPrice:20000};
+let orders=[];
 
-  const capital = rate*robux/1000;
-  const qty = Math.floor(robux/gp);
-  const used = qty*gp;
-  const remaining = robux-used;
-  const revenue = qty*sell;
-  const profit = revenue-capital;
-  const roi = capital ? profit/capital*100 : 0;
-  const margin = revenue ? profit/revenue*100 : 0;
-  const gpCost = robux ? capital*gp/robux : 0;
+try{
+ const saved=JSON.parse(localStorage.getItem('robuxTradeData')||'null');
+ if(saved){config={...config,...saved.config};orders=saved.orders||[];}
+}catch(e){}
 
-  $('capital').textContent=money(capital);
-  $('capital2').textContent=money(capital);
-  $('revenue').textContent=money(revenue);
-  $('profit').textContent=money(profit);
-  $('profit').className='metric '+(profit>=0?'green':'red');
-  $('quantity').textContent=number(qty);
-  $('remaining').textContent=number(remaining);
-  $('roi').textContent=roi.toFixed(2)+'%';
-  $('margin').textContent=margin.toFixed(2)+'%';
-  $('bar').style.width=Math.max(0,Math.min(100,margin))+'%';
-  $('unitCost').textContent=money(robux?capital/robux:0);
-  $('gpCost').textContent=money(gpCost);
-  $('gpProfit').textContent=money(sell-gpCost);
-  $('used').textContent=number(used);
-
-  $('summary').textContent=profit>=0
-    ? 'Dự kiến bán '+qty+' GP, doanh thu '+money(revenue)+', lợi nhuận sau khi trừ toàn bộ vốn nhập là '+money(profit)+'.'
-    : 'Mức giá bán hiện tại đang thấp hơn mức cần thiết để hòa vốn.';
-
-  $('priceTable').innerHTML=[15000,16000,17000,18000,19000,20000]
-    .map(price=>{
-      const rev=qty*price;
-      const p=rev-capital;
-      return `<tr>
-        <td>${number(price)}đ</td>
-        <td>${money(rev)}</td>
-        <td style="color:${p>=0?'var(--green)':'var(--red)'}">${money(p)}</td>
-      </tr>`;
-    }).join('');
+function persist(){
+ localStorage.setItem('robuxTradeData',JSON.stringify({config,orders}));
 }
 
-function resetData(){
-  $('rate').value=123000;
-  $('robux').value=7600;
-  $('sell').value=20000;
-  $('gp').value=99;
-  calculate();
+function soldRobux(){return orders.reduce((s,o)=>s+o.qty*config.gpSize,0)}
+function inventory(){return config.initialStock-soldRobux()}
+function capital(){return config.rate*config.initialStock}
+function paidOrders(){return orders.filter(o=>o.payment==='paid')}
+function paidRevenue(){return paidOrders().reduce((s,o)=>s+o.qty*o.price,0)}
+function paidCost(){return paidOrders().reduce((s,o)=>s+o.qty*config.gpSize*config.rate,0)}
+function profit(){return paidRevenue()-paidCost()}
+
+function refresh(){
+ const rev=paidRevenue(),p=profit(),cap=capital();
+ $('capital').textContent=fmt(cap);
+ $('revenue').textContent=fmt(rev);
+ $('profit').textContent=fmt(p);
+ $('profit').className='stat-value '+(p>=0?'green':'red');
+ $('stock').textContent=num(inventory());
+ $('sold').textContent=num(orders.reduce((s,o)=>s+o.qty,0));
+ $('roi').textContent=(paidCost()?p/paidCost()*100:0).toFixed(1)+'%';
+
+ $('sRate').textContent=fmt(config.rate);
+ $('sStock').textContent=num(config.initialStock);
+ $('sCapital').textContent=fmt(cap);
+ $('sGP').textContent=fmt(config.rate*config.gpSize);
+ $('sUsed').textContent=num(soldRobux());
+ $('sRemain').textContent=num(inventory());
+
+ $('quickRate').value=config.rate;
+ $('quickRobux').value=config.initialStock;
+ $('quickPrice').value=config.defaultPrice;
+ $('orderPrice').value=config.defaultPrice;
+
+ const gpCost=config.rate*config.gpSize;
+ $('simCost').textContent=fmt(gpCost);
+ $('simProfit').textContent=fmt(Number($('simPrice').value)-gpCost);
+ $('breakEven').textContent=fmt(gpCost);
+ renderComparison();
+ renderOrders();
+ renderChart();
 }
 
-document.querySelectorAll('input').forEach(input=>{
-  input.addEventListener('input',calculate);
+function renderComparison(){
+ const q=Math.floor(config.initialStock/config.gpSize);
+ const prices=[15000,16000,17000,18000,19000,20000];
+ $('comparison').innerHTML=prices.map(price=>{
+  const rev=q*price;
+  const cost=q*config.gpSize*config.rate;
+  const p=rev-cost;
+  return `<tr><td>${num(price)}đ</td><td>${fmt(rev)}</td>
+  <td style="color:${p>=0?'var(--green)':'var(--red)'}">${fmt(p)}</td>
+  <td>${cost?(p/cost*100).toFixed(1):0}%</td></tr>`;
+ }).join('');
+}
+
+function renderOrders(){
+ const search=$('search').value.toLowerCase();
+ const filtered=orders.filter(o=>(o.customer+' '+o.contact+' '+o.note).toLowerCase().includes(search));
+ $('orders').innerHTML=filtered.length?filtered.map(o=>{
+  const href=/^https?:\/\//i.test(o.contact)?o.contact:'';
+  const contact=href?`<a class="link" target="_blank" rel="noopener" href="${escapeAttr(href)}">Mở liên hệ ↗</a>`:escapeHTML(o.contact||'—');
+  return `<tr>
+   <td>${escapeHTML(o.date)}</td>
+   <td>${escapeHTML(o.customer)}</td>
+   <td>${contact}<br><span class="muted">${escapeHTML(o.type)}</span></td>
+   <td>${o.qty}</td>
+   <td>${fmt(o.qty*o.price)}</td>
+   <td><span class="tag ${o.payment}">${o.payment==='paid'?'Đã thanh toán':'Chưa thanh toán'}</span></td>
+   <td><button class="btn btn-danger" onclick="deleteOrder('${o.id}')">Xóa</button></td>
+  </tr>`;
+ }).join(''):'<tr><td colspan="7" class="empty">Chưa có giao dịch nào</td></tr>';
+}
+
+function renderChart(){
+ const months=[];
+ const now=new Date();
+ for(let i=5;i>=0;i--){
+  const d=new Date(now.getFullYear(),now.getMonth()-i,1);
+  const key=d.toISOString().slice(0,7);
+  const value=paidOrders().filter(o=>o.date.slice(0,7)===key).reduce((s,o)=>s+o.qty*o.price,0);
+  months.push({label:(d.getMonth()+1)+'/'+String(d.getFullYear()).slice(2),value});
+ }
+ const max=Math.max(1,...months.map(x=>x.value));
+ $('chart').innerHTML=months.map(m=>{
+  const h=m.value/max*125;
+  return `<div class="chart-item"><div class="chart-value">${m.value?Math.round(m.value/1000)+'k':'—'}</div><div class="chart-bar" style="height:${Math.max(2,h)}px"></div><div class="chart-label">${m.label}</div></div>`;
+ }).join('');
+}
+
+function escapeHTML(s){
+ return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function escapeAttr(s){return escapeHTML(s)}
+
+$('addOrder').onclick=()=>{
+ const customer=$('customer').value.trim();
+ const qty=Math.floor(Number($('orderQty').value));
+ const price=Number($('orderPrice').value);
+ const contact=$('contact').value.trim();
+ if(!customer||!Number.isFinite(qty)||qty<1||!Number.isFinite(price)||price<0){
+  alert('Vui lòng nhập tên khách, số GP và giá bán hợp lệ.');return;
+ }
+ if(qty*config.gpSize>inventory()){
+  alert('Không đủ Robux tồn kho! Hiện còn '+inventory()+' Robux.');return;
+ }
+ orders.unshift({
+  id:Date.now().toString(36)+Math.random().toString(36).slice(2,7),
+  date:today(),customer,qty,price,contact,
+  type:$('contactType').value,
+  payment:$('payment').value,
+  note:$('note').value.trim()
+ });
+ ['customer','contact','note'].forEach(id=>$(id).value='');
+ $('orderQty').value=1;
+ persist();refresh();
+ alert('Đã lưu giao dịch!');
+};
+
+window.deleteOrder=id=>{
+ if(!confirm('Xóa giao dịch này? Robux sẽ được hoàn lại vào tồn kho.'))return;
+ orders=orders.filter(o=>o.id!==id);
+ persist();refresh();
+};
+
+$('saveSettings').onclick=()=>{
+ const rate=Number($('rate').value);
+ const stock=Number($('initialStock').value);
+ const gp=Number($('gpSize').value);
+ const price=Number($('defaultPrice').value);
+ if(![rate,stock,gp,price].every(Number.isFinite)||rate<0||stock<0||gp<1||price<0){
+  alert('Thông số không hợp lệ.');return;
+ }
+ config={rate,initialStock:Math.floor(stock),gpSize:Math.floor(gp),defaultPrice:price};
+ if(soldRobux()>config.initialStock){
+  alert('Robux nhập ban đầu không thể thấp hơn số Robux đã giao dịch.');return;
+ }
+ persist();refresh();alert('Đã lưu cài đặt!');
+};
+
+$('simPrice').oninput=()=>{
+ $('simProfit').textContent=fmt(Number($('simPrice').value)-config.rate*Number($('simGP').value));
+};
+$('simGP').oninput=()=>{
+ $('simCost').textContent=fmt(config.rate*Number($('simGP').value));
+ $('simProfit').textContent=fmt(Number($('simPrice').value)-config.rate*Number($('simGP').value));
+ $('breakEven').textContent=fmt(config.rate*Number($('simGP').value));
+};
+$('search').oninput=renderOrders;
+
+['quickRate','quickRobux','quickPrice'].forEach(id=>$(id).oninput=()=>{
+ const r=Number($('quickRate').value)||0;
+ const b=Number($('quickRobux').value)||0;
+ const p=Number($('quickPrice').value)||0;
+ const gp=config.gpSize;
+ const q=Math.floor(b/gp);
+ $('qCost').textContent=fmt(r*b);
+ $('qQty').textContent=q;
+ $('qProfit').textContent=fmt(q*p-q*gp*r);
 });
-calculate();
+
+document.querySelectorAll('.nav').forEach(btn=>btn.onclick=()=>{
+ document.querySelectorAll('.nav').forEach(b=>b.classList.remove('active'));
+ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+ btn.classList.add('active');
+ $(btn.dataset.page).classList.add('active');
+});
+
+function download(name,content,type){
+ const blob=new Blob([content],{type});
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement('a');
+ a.href=url;a.download=name;a.click();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+$('export').onclick=()=>{
+ const cols=['Ngày','Khách hàng','Loại liên hệ','Link hoặc số liên hệ','Số GP','Robux sử dụng','Giá mỗi GP','Doanh thu','Thanh toán','Ghi chú'];
+ const rows=orders.map(o=>[o.date,o.customer,o.type,o.contact,o.qty,o.qty*config.gpSize,o.price,o.qty*o.price,o.payment,o.note]);
+ const csv=[cols,...rows].map(row=>row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');
+ download('robux-transactions.csv','\uFEFF'+csv,'text/csv;charset=utf-8');
+};
+$('backup').onclick=()=>download('robux-backup.json',JSON.stringify({config,orders},null,2),'application/json');
+$('clear').onclick=()=>{
+ if(!confirm('CẢNH BÁO: Xóa toàn bộ cài đặt và giao dịch?'))return;
+ orders=[];config={rate:140,initialStock:1149,gpSize:99,defaultPrice:20000};
+ persist();refresh();
+};
+
+function quick(){
+ const r=Number($('quickRate').value)||0;
+ const b=Number($('quickRobux').value)||0;
+ const p=Number($('quickPrice').value)||0;
+ const gp=config.gpSize,q=Math.floor(b/gp);
+ $('qCost').textContent=fmt(r*b);
+ $('qQty').textContent=q;
+ $('qProfit').textContent=fmt(q*p-q*gp*r);
+}
+$('quickRate').oninput=quick;
+$('quickRobux').oninput=quick;
+$('quickPrice').oninput=quick;
+
+refresh();quick();
 </script>
 </body>
 </html>
- 
