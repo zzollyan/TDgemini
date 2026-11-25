@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Connectivity 3 · Units 1–4 Study Lab</title>
+<style>
+:root{--bg:#f4f6fb;--card:#fff;--ink:#172033;--muted:#68738a;--line:#e4e8f1;--blue:#4968e8;--blue2:#eaf0ff;--green:#16865b;--red:#c34848;--shadow:0 10px 30px #1b2a4a12}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{background:linear-gradient(120deg,#263d9b,#6179ed);color:white;padding:25px 18px 22px}
+.wrap{max-width:1050px;margin:auto;padding:0 16px}h1{font-size:clamp(23px,4vw,34px);margin:0 0 5px}header p{margin:0;color:#e4eaff}
+main{padding:20px 0 50px}.panel,.card{background:var(--card);border:1px solid var(--line);border-radius:17px;box-shadow:var(--shadow)}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:14px;margin-bottom:14px}
+select,button,input{font:inherit;border-radius:10px;border:1px solid var(--line);padding:10px 12px;background:white;color:var(--ink)}
+select{min-width:150px}button{cursor:pointer;font-weight:650}button.primary{background:var(--blue);color:#fff;border-color:var(--blue)}button.soft{background:var(--blue2);color:#2845b5;border-color:#dbe4ff}button:disabled{opacity:.45;cursor:not-allowed}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.tab{padding:9px 14px;border-radius:999px;background:#fff;border:1px solid var(--line)}.tab.active{background:var(--blue);color:white;border-color:var(--blue)}
+.stats{display:flex;gap:12px;flex-wrap:wrap;margin-left:auto;color:var(--muted);font-size:13px}
+.content{padding:20px}.eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--blue);font-weight:800}.title{font-size:23px;margin:3px 0 4px}.muted{color:var(--muted)}.hidden{display:none!important}
+.flash{min-height:280px;display:grid;place-items:center;text-align:center;padding:28px;border:1px solid #dfe6ff;border-radius:18px;background:linear-gradient(145deg,#f8faff,#edf2ff);cursor:pointer}
+.flash .term{font-size:clamp(26px,5vw,40px);font-weight:800;line-height:1.2}.flash .meaning{font-size:22px;font-weight:700}.flash .sub{color:var(--muted);margin-top:12px}
+.actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px}.progress{height:8px;background:#edf0f6;border-radius:20px;overflow:hidden;margin:12px 0}.progress span{display:block;height:100%;background:var(--blue);width:0}
+.quizbox{padding:20px}.prompt{font-size:clamp(21px,4vw,28px);font-weight:750;margin:12px 0 18px}.answer{width:100%;font-size:17px}.feedback{padding:12px;border-radius:12px;margin-top:12px}.good{background:#e8f7ef;color:#116b47}.bad{background:#fff0ef;color:#a33737}
+.grammar-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}.rule{padding:15px;border:1px solid var(--line);border-radius:14px}.rule h3{margin:0 0 8px}.formula{background:#f1f4ff;padding:9px 11px;border-radius:9px;font-family:ui-monospace,monospace;white-space:pre-wrap;margin:8px 0}.exercise{margin-top:18px;padding:17px;border-radius:14px;background:#f8f9fc;border:1px solid var(--line)}
+table{border-collapse:collapse;width:100%;font-size:14px}th,td{text-align:left;padding:10px;border-bottom:1px solid var(--line);vertical-align:top}th{background:#f6f7fb;position:sticky;top:0}.tablewrap{overflow:auto;max-height:540px;border:1px solid var(--line);border-radius:12px}
+.small{font-size:13px}.footer{margin-top:16px;color:var(--muted);font-size:12px}
+@media(max-width:600px){.content{padding:14px}.toolbar{padding:11px}.stats{width:100%;margin-left:0}.flash{min-height:245px}th,td{padding:8px}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><h1>Connectivity 3 · Study Lab</h1><p>Ôn tập Units 1–4 · Flashcards · Kiểm tra viết từ · Luyện viết câu ngữ pháp</p></div></header>
+<main class="wrap">
+ <section class="panel toolbar">
+  <label>Unit <select id="unit"><option value="all">Tất cả Units 1–4</option><option value="1">Unit 1 · Becoming Culturally Literate</option><option value="2">Unit 2 · Getting Help</option><option value="3">Unit 3 · What We Read</option><option value="4">Unit 4 · Taking Care of Yourself</option></select></label>
+  <div class="stats"><span id="vcount">0 từ</span><span id="gcount">0 điểm ngữ pháp</span></div>
+ </section>
+ <section class="panel toolbar" style="margin-top:-4px">
+  <b>🔊 Giọng đọc:</b>
+  <select id="voiceLang" aria-label="Chọn giọng đọc"><option value="en-US">English (US)</option><option value="en-GB">English (UK)</option></select>
+  <label class="small">Tốc độ <input id="voiceRate" type="range" min="0.7" max="1.15" step="0.05" value="0.9" style="vertical-align:middle"></label>
+  <button id="testVoice" class="soft">▶ Nghe thử</button>
+  <button id="stopVoice">■ Dừng đọc</button>
+ </section>
+ <nav class="tabs">
+  <button class="tab active" data-tab="cards">📚 Học flashcard</button>
+  <button class="tab" data-tab="vquiz">✍️ Test từ vựng</button>
+  <button class="tab" data-tab="grammar">🧠 Ngữ pháp</button>
+  <button class="tab" data-tab="list">📖 Danh sách từ</button>
+ </nav>
+ <section id="cards" class="panel content">
+  <div class="eyebrow">Flashcards</div><h2 class="title">Học từ vựng bằng thẻ</h2><p class="muted">Nhấn vào thẻ để lật xem nghĩa, ví dụ và phiên âm.</p>
+  <div class="progress"><span id="cardbar"></span></div>
+  <div class="flash" id="flash" role="button" tabindex="0"><div><div class="eyebrow" id="cardunit">UNIT</div><div class="term" id="front">Loading…</div><div class="sub" id="hint">Nhấn để xem đáp án</div><div id="back" class="hidden"><div class="meaning" id="meaning"></div><div class="sub" id="ipa"></div><p id="example"></p></div></div></div>
+  <div class="actions"><button id="prev">← Trước</button><button class="soft" id="flip">Lật thẻ</button><button class="soft" id="speakCard">🔊 Nghe từ</button><button class="primary" id="next">Tiếp theo →</button><button id="shuffle">Trộn thẻ</button></div>
+ </section>
+ <section id="vquiz" class="panel content hidden">
+  <div class="eyebrow">Vocabulary test</div><h2 class="title">Nhìn nghĩa tiếng Việt, viết từ tiếng Anh</h2><p class="muted">Gõ từ hoặc cụm từ tiếng Anh tương ứng. Không phân biệt chữ hoa/chữ thường.</p>
+  <div class="quizbox">
+   <div class="muted small" id="qprogress">Câu 1</div><div class="prompt" id="vmeaning"></div>
+   <input class="answer" id="vanswer" autocomplete="off" placeholder="Viết từ tiếng Anh ở đây…">
+   <div class="actions" style="justify-content:flex-start"><button class="primary" id="vcheck">Kiểm tra</button><button id="vshow">Hiện đáp án</button><button id="vlisten">🔊 Nghe đáp án</button><button id="vnext" class="soft">Câu tiếp theo →</button></div>
+   <div id="vfeedback"></div>
+   <div class="progress"><span id="vbar"></span></div><div class="muted small" id="vscore">Đúng: 0 · Sai: 0</div>
+  </div>
+ </section>
+ <section id="grammar" class="panel content hidden">
+  <div class="eyebrow">Grammar practice</div><h2 class="title">Ôn cấu trúc và luyện viết câu</h2><p class="muted">Chọn điểm ngữ pháp để xem công thức, sau đó tự viết câu theo yêu cầu. Đáp án mẫu có thể mở để đối chiếu.</p>
+  <div id="rules" class="grammar-grid"></div>
+  <div class="exercise">
+   <div class="eyebrow">Write a correct sentence</div><h3 id="gtitle">Bài luyện viết</h3><p id="gprompt"></p>
+   <textarea id="ganswer" class="answer" rows="3" placeholder="Viết câu hoàn chỉnh bằng tiếng Anh…"></textarea>
+   <div class="actions" style="justify-content:flex-start"><button class="primary" id="gmodel">Xem câu mẫu</button><button id="gnew">Bài tiếp theo</button></div>
+   <div id="gmodelbox" class="hidden feedback"></div>
+  </div>
+ </section>
+ <section id="list" class="panel content hidden">
+  <div class="eyebrow">Vocabulary bank</div><h2 class="title">Danh sách từ vựng</h2><input id="search" placeholder="Tìm từ tiếng Anh hoặc nghĩa tiếng Việt…" style="width:100%;margin:8px 0 12px">
+  <div class="tablewrap"><table><thead><tr><th>English</th><th>Từ loại</th><th>IPA</th><th>Nghĩa tiếng Việt</th></tr></thead><tbody id="wordrows"></tbody></table></div>
+ </section>
+ <p class="footer">Mẹo ôn thi: học flashcard theo từng Unit → làm test nghĩa tiếng Việt sang tiếng Anh → viết lại công thức ngữ pháp không nhìn đáp án → làm lại những câu sai. Voice sử dụng giọng đọc có sẵn của trình duyệt/điện thoại; nếu chưa phát tiếng, hãy mở file bằng Chrome và kiểm tra âm lượng media.</p>
+ <p class="footer">Ghi chú nguồn: nội dung dựa trên phần Units 1–4 đã được trích xuất và tổng hợp trong cuộc trò chuyện. Một số ví dụ luyện viết được tự biên soạn để luyện cấu trúc; không phải trích nguyên văn sách. Đây là bản ôn tập mở rộng, không thể bảo đảm bao gồm mọi từ xuất hiện trong mọi bài đọc/nghe của sách.</p>
+</main>
+<script>
+const V = [
+[1,"in person","cụm trạng từ","/ɪn ˈpɜːrsən/","trực tiếp, gặp mặt","We met in person."],
+[1,"head back","cụm động từ","/hed bæk/","quay trở lại","I have to head back."],
+[1,"small world","cụm danh từ","/smɔːl wɜːrld/","thế giới thật nhỏ bé","What a small world!"],
+[1,"get a handle on","thành ngữ","/ɡet ə ˈhændəl ɑːn/","nắm bắt, hiểu rõ","I need to get a handle on this."],
+[1,"on a first-name basis","cụm từ","/ɑːn ə ˈfɜːrst neɪm ˈbeɪsɪs/","quen đến mức gọi nhau bằng tên","We are on a first-name basis."],
+[1,"etiquette","danh từ","/ˈetɪkət/","phép xã giao, quy tắc ứng xử","Good etiquette is important."],
+[1,"cultural literacy","danh từ","/ˈkʌltʃərəl ˈlɪtərəsi/","hiểu biết về văn hóa","Cultural literacy helps communication."],
+[1,"table manners","danh từ số nhiều","/ˈteɪbəl ˈmænərz/","phép tắc trên bàn ăn","Table manners vary by culture."],
+[1,"punctuality","danh từ","/ˌpʌŋktʃuˈæləti/","sự đúng giờ","Punctuality is valued."],
+[1,"impolite","tính từ","/ˌɪmpəˈlaɪt/","bất lịch sự","It is impolite to interrupt."],
+[1,"offensive","tính từ","/əˈfensɪv/","xúc phạm, gây khó chịu","That comment was offensive."],
+[1,"customary","tính từ","/ˈkʌstəmeri/","theo phong tục, thông lệ","This greeting is customary."],
+[1,"taboo","danh từ/tính từ","/təˈbuː/","điều cấm kỵ","The topic is taboo."],
+[1,"financial outlook","cụm danh từ","/faɪˈnænʃəl ˈaʊtlʊk/","triển vọng tài chính","Their financial outlook changed."],
+[1,"sexism","danh từ","/ˈseksɪzəm/","sự phân biệt giới tính","The article discusses sexism."],
+[1,"gender pay gap","cụm danh từ","/ˈdʒendər peɪ ɡæp/","khoảng cách tiền lương giữa các giới","The gender pay gap is discussed."],
+[1,"backup plan","cụm danh từ","/ˈbækʌp plæn/","kế hoạch dự phòng","We need a backup plan."],
+[1,"double standard","cụm danh từ","/ˌdʌbəl ˈstændərd/","tiêu chuẩn kép","That is a double standard."],
+[1,"traditional gender roles","cụm danh từ","/trəˈdɪʃənəl ˈdʒendər roʊlz/","vai trò giới truyền thống","Traditional gender roles can change."],
+[1,"breadwinner","danh từ","/ˈbredˌwɪnər/","người trụ cột kiếm thu nhập","She is the family breadwinner."],
+[2,"have a lot on your plate","thành ngữ","/hæv ə lɑːt ɑːn jər pleɪt/","có rất nhiều việc phải làm","I have a lot on my plate."],
+[2,"ASAP","trạng từ viết tắt","/ˌeɪ es eɪ ˈpiː/","càng sớm càng tốt","Please call me ASAP."],
+[2,"heads-up","danh từ","/ˈhedz ʌp/","lời báo trước","Thanks for the heads-up."],
+[2,"drop by","cụm động từ","/drɑːp baɪ/","ghé qua","I'll drop by tomorrow."],
+[2,"a lifesaver","danh từ","/ə ˈlaɪfˌseɪvər/","người/cái giúp đúng lúc","You're a lifesaver."],
+[2,"I owe you one","cụm giao tiếp","/aɪ oʊ juː wʌn/","tôi nợ bạn một ân huệ","Thanks. I owe you one."],
+[2,"no harm done","cụm giao tiếp","/noʊ hɑːrm dʌn/","không sao, không có vấn đề gì","No harm done."],
+[2,"work out","cụm động từ","/wɜːrk aʊt/","diễn ra tốt đẹp","Everything worked out."],
+[2,"get back to someone","cụm động từ","/ɡet bæk tə ˈsʌmwʌn/","liên hệ lại với ai","I'll get back to you."],
+[2,"slip someone's mind","thành ngữ","/slɪp ˈsʌmwʌnz maɪnd/","quên mất điều gì","The date slipped my mind."],
+[2,"repair","động từ/danh từ","/rɪˈper/","sửa chữa","They repair phones."],
+[2,"deliver","động từ","/dɪˈlɪvər/","giao hàng","They deliver packages."],
+[2,"dry-clean","động từ","/ˌdraɪ ˈkliːn/","giặt khô","I dry-clean my suit."],
+[2,"shorten","động từ","/ˈʃɔːrtn/","làm ngắn lại","Please shorten the pants."],
+[2,"lengthen","động từ","/ˈleŋθən/","làm dài ra","They can lengthen the skirt."],
+[2,"renew","động từ","/rɪˈnuː/","gia hạn, làm mới","I need to renew my passport."],
+[2,"catering","danh từ","/ˈkeɪtərɪŋ/","dịch vụ cung cấp đồ ăn","The catering was excellent."],
+[2,"babysitting","danh từ","/ˈbeɪbiˌsɪtɪŋ/","dịch vụ trông trẻ","Babysitting is available."],
+[2,"dog grooming","danh từ","/dɔːɡ ˈɡruːmɪŋ/","dịch vụ chăm sóc chó","Dog grooming is popular."],
+[2,"dry cleaner","danh từ","/ˌdraɪ ˈkliːnər/","tiệm giặt khô","I went to the dry cleaner."],
+[2,"copy shop","danh từ","/ˈkɑːpi ʃɑːp/","tiệm photocopy","The copy shop is nearby."],
+[2,"delivery service","danh từ","/dɪˈlɪvəri ˈsɜːrvɪs/","dịch vụ giao hàng","We use a delivery service."],
+[2,"tailor","danh từ","/ˈteɪlər/","thợ may","The tailor fixed my jacket."],
+[2,"customer service","danh từ","/ˈkʌstəmər ˈsɜːrvɪs/","dịch vụ khách hàng","Customer service matters."],
+[2,"customer satisfaction","danh từ","/ˈkʌstəmər ˌsætɪsˈfækʃən/","sự hài lòng của khách hàng","Customer satisfaction is important."],
+[2,"loyal","tính từ","/ˈlɔɪəl/","trung thành","Loyal customers return."],
+[2,"knowledgeable","tính từ","/ˈnɑːlɪdʒəbəl/","am hiểu, có kiến thức","The staff are knowledgeable."],
+[2,"expertise","danh từ","/ˌekspərˈtiːz/","chuyên môn","She has expertise in repairs."],
+[2,"reliable","tính từ","/rɪˈlaɪəbəl/","đáng tin cậy","This service is reliable."],
+[2,"attentive","tính từ","/əˈtentɪv/","chu đáo, quan tâm","The staff are attentive."],
+[2,"helpful","tính từ","/ˈhelpfəl/","hay giúp đỡ, hữu ích","The assistant is helpful."],
+[2,"professional","tính từ","/prəˈfeʃənəl/","chuyên nghiệp","They are professional."],
+[2,"friendliness","danh từ","/ˈfrendlinəs/","sự thân thiện","I like their friendliness."],
+[2,"first-rate","tính từ","/ˌfɜːrst ˈreɪt/","xuất sắc, hạng nhất","Their service is first-rate."],
+[3,"fiction","danh từ","/ˈfɪkʃən/","truyện hư cấu","I enjoy fiction."],
+[3,"non-fiction","danh từ","/ˌnɑːnˈfɪkʃən/","sách phi hư cấu","She reads non-fiction."],
+[3,"novel","danh từ","/ˈnɑːvəl/","tiểu thuyết","I'm reading a novel."],
+[3,"crime fiction","danh từ","/ˈkraɪm ˌfɪkʃən/","truyện tội phạm","He likes crime fiction."],
+[3,"mystery","danh từ","/ˈmɪstəri/","truyện bí ẩn, trinh thám","This mystery is exciting."],
+[3,"thriller","danh từ","/ˈθrɪlər/","truyện giật gân","I love thrillers."],
+[3,"fantasy","danh từ","/ˈfæntəsi/","truyện giả tưởng","She reads fantasy."],
+[3,"romance","danh từ","/roʊˈmæns/","truyện tình cảm","This is a romance."],
+[3,"science fiction","danh từ","/ˌsaɪəns ˈfɪkʃən/","khoa học viễn tưởng","He enjoys science fiction."],
+[3,"biography","danh từ","/baɪˈɑːɡrəfi/","tiểu sử người khác","I read a biography."],
+[3,"autobiography","danh từ","/ˌɔːtəbaɪˈɑːɡrəfi/","tự truyện","She wrote an autobiography."],
+[3,"self-help book","danh từ","/ˌself ˈhelp bʊk/","sách phát triển bản thân","He reads self-help books."],
+[3,"best-seller","danh từ","/ˌbest ˈselər/","sách bán chạy","It's a best-seller."],
+[3,"page-turner","danh từ","/ˈpeɪdʒ ˌtɜːrnər/","sách rất cuốn hút","This book is a page-turner."],
+[3,"cliff-hanger","danh từ","/ˈklɪfˌhæŋər/","tình tiết/kết thúc bỏ lửng gây hồi hộp","The ending is a cliff-hanger."],
+[3,"fast read","cụm danh từ","/ˌfæst ˈriːd/","sách dễ đọc, đọc nhanh","It's a fast read."],
+[3,"hard to follow","cụm tính từ","/hɑːrd tə ˈfɑːloʊ/","khó theo dõi, khó hiểu","The plot is hard to follow."],
+[3,"hardcover","danh từ","/ˈhɑːrdˌkʌvər/","sách bìa cứng","I prefer hardcovers."],
+[3,"paperback","danh từ","/ˈpeɪpərˌbæk/","sách bìa mềm","This paperback is cheap."],
+[3,"e-reader","danh từ","/ˈiː ˌriːdər/","thiết bị đọc sách điện tử","I use an e-reader."],
+[3,"audiobook","danh từ","/ˈɔːdioʊˌbʊk/","sách nói","I listen to audiobooks."],
+[3,"podcast","danh từ","/ˈpɑːdˌkæst/","chương trình phát thanh trực tuyến","I listen to podcasts."],
+[3,"magazine","danh từ","/ˈmæɡəziːn/","tạp chí","She reads a magazine."],
+[3,"website","danh từ","/ˈwebsaɪt/","trang web","I read it on a website."],
+[3,"blog","danh từ","/blɑːɡ/","nhật ký/trang viết trực tuyến","He writes a blog."],
+[3,"digital","tính từ","/ˈdɪdʒɪtəl/","kỹ thuật số","I prefer digital books."],
+[3,"print","danh từ/tính từ","/prɪnt/","bản in, dạng in","I prefer print books."],
+[3,"a good read","cụm danh từ","/ə ɡʊd riːd/","một cuốn sách hay","It's a good read."],
+[3,"put it down","cụm động từ","/pʊt ɪt daʊn/","đặt nó xuống","I can't put it down."],
+[3,"be hooked on","cụm từ","/bi hʊkt ɑːn/","say mê, mê mẩn","I'm hooked on this series."],
+[3,"switch over to","cụm động từ","/swɪtʃ ˈoʊvər tuː/","chuyển sang","I switched over to e-books."],
+[3,"digital natives","danh từ số nhiều","/ˈdɪdʒɪtəl ˈneɪtɪvz/","người lớn lên cùng công nghệ số","Digital natives use technology daily."],
+[4,"medical checkup","danh từ","/ˈmedɪkəl ˈtʃekʌp/","khám sức khỏe tổng quát","I had a medical checkup."],
+[4,"dental examination","danh từ","/ˈdentəl ɪɡˌzæməˈneɪʃən/","khám răng","I need a dental examination."],
+[4,"eye test","danh từ","/ˈaɪ test/","kiểm tra mắt","She had an eye test."],
+[4,"X-ray","danh từ","/ˈeks reɪ/","chụp X-quang","The doctor ordered an X-ray."],
+[4,"shot","danh từ","/ʃɑːt/","mũi tiêm","I had a shot."],
+[4,"blood test","danh từ","/ˈblʌd test/","xét nghiệm máu","I had a blood test."],
+[4,"filling","danh từ","/ˈfɪlɪŋ/","trám răng","I need a filling."],
+[4,"surgery","danh từ","/ˈsɜːrdʒəri/","phẫu thuật","He needs surgery."],
+[4,"short of breath","cụm tính từ","/ˌʃɔːrt əv ˈbreθ/","khó thở","She feels short of breath."],
+[4,"dizzy","tính từ","/ˈdɪzi/","chóng mặt","I feel dizzy."],
+[4,"nauseous","tính từ","/ˈnɔːʃəs/","buồn nôn","He feels nauseous."],
+[4,"throw up","cụm động từ","/θroʊ ʌp/","nôn","She might throw up."],
+[4,"sneeze","động từ","/sniːz/","hắt hơi","I keep sneezing."],
+[4,"swollen","tính từ","/ˈswoʊlən/","bị sưng","My ankle is swollen."],
+[4,"rash","danh từ","/ræʃ/","phát ban","She has a rash."],
+[4,"itch","danh từ/động từ","/ɪtʃ/","cơn ngứa; ngứa","The bite may itch."],
+[4,"bruise","danh từ","/bruːz/","vết bầm tím","He has a bruise."],
+[4,"stomachache","danh từ","/ˈstʌməkeɪk/","đau bụng","I have a stomachache."],
+[4,"headache","danh từ","/ˈhedeɪk/","đau đầu","I have a headache."],
+[4,"earache","danh từ","/ˈɪreɪk/","đau tai","She has an earache."],
+[4,"toothache","danh từ","/ˈtuːθeɪk/","đau răng","He has a toothache."],
+[4,"backache","danh từ","/ˈbækeɪk/","đau lưng","I have a backache."],
+[4,"sore throat","danh từ","/ˌsɔːr ˈθroʊt/","đau họng","She has a sore throat."],
+[4,"fever","danh từ","/ˈfiːvər/","sốt","He has a fever."],
+[4,"cough","danh từ/động từ","/kɔːf/","ho; cơn ho","I have a cough."],
+[4,"runny nose","danh từ","/ˌrʌni ˈnoʊz/","chảy nước mũi","I have a runny nose."],
+[4,"antihistamine","danh từ","/ˌæntiˈhɪstəmiːn/","thuốc kháng histamine","The doctor discussed an antihistamine."],
+[4,"antacid","danh từ","/æntˈæsɪd/","thuốc kháng axit dạ dày","An antacid is a type of medicine."],
+[4,"antibiotic","danh từ","/ˌæntibaɪˈɑːtɪk/","thuốc kháng sinh","The doctor prescribed an antibiotic."],
+[4,"ointment","danh từ","/ˈɔɪntmənt/","thuốc mỡ","The ointment is for external use."],
+[4,"vitamin","danh từ","/ˈvaɪtəmɪn/","vitamin","The label lists vitamins."],
+[4,"cough medicine","danh từ","/ˈkɔːf ˌmedɪsən/","thuốc ho","Ask about cough medicine."],
+[4,"eye drops","danh từ số nhiều","/ˈaɪ drɑːps/","thuốc nhỏ mắt","These are eye drops."],
+[4,"painkiller","danh từ","/ˈpeɪnˌkɪlər/","thuốc giảm đau","Ask a pharmacist about painkillers."],
+[4,"nasal spray","danh từ","/ˈneɪzəl spreɪ/","thuốc xịt mũi","This is a nasal spray."],
+[4,"decongestant","danh từ","/ˌdiːkənˈdʒestənt/","thuốc thông mũi","A decongestant is a medicine."],
+[4,"prescription","danh từ","/prɪˈskrɪpʃən/","đơn thuốc; thuốc kê đơn","The medicine needs a prescription."],
+[4,"over-the-counter medication","danh từ","/ˌoʊvər ðə ˈkaʊntər ˌmedɪˈkeɪʃən/","thuốc không cần đơn","Ask about over-the-counter medication."],
+[4,"dosage","danh từ","/ˈdoʊsɪdʒ/","liều lượng","Follow the dosage on the label."],
+[4,"side effects","danh từ số nhiều","/ˈsaɪd ɪˌfekts/","tác dụng phụ","Ask about possible side effects."],
+[4,"conventional medicine","danh từ","/kənˈvenʃənəl ˈmedɪsən/","y học thông thường/chính thống","The text discusses conventional medicine."],
+[4,"alternative approach","danh từ","/ɔːlˈtɜːrnətɪv əˈproʊtʃ/","phương pháp thay thế","They discussed an alternative approach."],
+[4,"complementary approach","danh từ","/ˌkɑːmpləˈmentəri əˈproʊtʃ/","phương pháp bổ trợ","A complementary approach may be discussed."],
+[4,"integrative approach","danh từ","/ˈɪntɪɡreɪtɪv əˈproʊtʃ/","phương pháp kết hợp","The article describes an integrative approach."],
+[4,"acupuncture","danh từ","/ˈækjəˌpʌŋktʃər/","châm cứu","Acupuncture is discussed in the text."],
+[4,"meditation","danh từ","/ˌmedɪˈteɪʃən/","thiền","Meditation is one approach."],
+[4,"massage therapy","danh từ","/məˈsɑːʒ ˌθerəpi/","liệu pháp xoa bóp","The text mentions massage therapy."],
+[4,"psychological support","danh từ","/ˌsaɪkəˈlɑːdʒɪkəl səˈpɔːrt/","hỗ trợ tâm lý","Psychological support can be important."],
+[4,"physical therapy","danh từ","/ˈfɪzɪkəl ˈθerəpi/","vật lý trị liệu","Physical therapy is discussed."],
+[4,"holistic","tính từ","/hoʊˈlɪstɪk/","toàn diện","The article describes holistic care."]
+];
+const G = [
+{u:1,n:"Modals: must, may, might",f:"must + V: suy luận chắc chắn / nghĩa vụ tùy ngữ cảnh\nmay + V: có thể\nmight + V: có thể, mức độ không chắc chắn hơn",d:"Chọn modal phù hợp với mức độ chắc chắn hoặc ý nghĩa của câu.",ex:"She must be tired. / He may be at home. / They might arrive late."},
+{u:1,n:"Tag questions",f:"Câu khẳng định, đuôi phủ định: S + V..., auxiliary + not + pronoun?\nCâu phủ định, đuôi khẳng định: S + don't/doesn't/didn't..., auxiliary + pronoun?",d:"Dùng câu hỏi đuôi để xác nhận thông tin hoặc khuyến khích người nghe phản hồi.",ex:"You are a student, aren't you? / She doesn't drive, does she?"},
+{u:1,n:"Maybe / may be",f:"Maybe + clause\nS + may be + ...",d:"Maybe thường đứng đầu câu; may be là động từ khuyết thiếu may + be.",ex:"Maybe he is busy. / He may be busy."},
+{u:1,n:"Probably / most likely",f:"Be + probably/most likely + ...\nS + probably/most likely + verb...",d:"Diễn tả suy đoán ít chắc chắn hơn must. Với động từ thường, đặt probably trước động từ.",ex:"She is probably at home. / He probably went home."},
+{u:1,n:"Can / be able to",f:"can/can't + V\nam/is/are able to + V\nwas/were able to + V",d:"Diễn tả khả năng ở hiện tại hoặc quá khứ; be able to dùng được ở nhiều thì.",ex:"I can speak English. / She was able to finish the task."},
+{u:1,n:"Be able to – present perfect",f:"S + have/has + been able to + V",d:"Dùng be able to trong thì hiện tại hoàn thành để nói về khả năng/điều đã làm được.",ex:"I've been able to understand more English."},
+{u:1,n:"Tag questions – short answers",f:"Yes, S + auxiliary. / No, S + auxiliary + not.",d:"Trả lời ngắn câu hỏi đuôi bằng trợ động từ phù hợp với chủ ngữ.",ex:"You're ready, aren't you? Yes, I am. / No, I'm not."},
+{u:2,n:"Causative HAVE",f:"have + someone + V nguyên mẫu\nS + have/has + someone + V",d:"Nhờ hoặc yêu cầu một người thực hiện hành động.",ex:"I had my brother fix my laptop."},
+{u:2,n:"Causative GET",f:"get + someone + to + V",d:"Nhờ hoặc thuyết phục ai làm việc gì.",ex:"I got my friend to help me."},
+{u:2,n:"Passive causative",f:"have/get + object + V3/ed",d:"Nhấn mạnh vật/công việc được thực hiện bởi người khác.",ex:"I had my phone repaired. / She got her dress shortened."},
+{u:2,n:"MAKE / LET",f:"make + someone + V\nlet + someone + V",d:"Make: bắt/ép ai làm. Let: cho phép ai làm.",ex:"The teacher made us work. / My parents let me go."},
+{u:3,n:"Noun clauses as direct objects",f:"S + verb + (that) + S + V",d:"Mệnh đề bắt đầu bằng that làm tân ngữ cho động từ như think, know, believe, hear, hope.",ex:"I think (that) this book is interesting."},
+{u:3,n:"Short answers with so / not",f:"I think/believe/guess/hope so.\nI don't think/believe so.\nI guess/hope not.",d:"Dùng so hoặc not để thay thế cho mệnh đề đã được nhắc đến.",ex:"Will it rain? I hope not. / Is it good? I think so."},
+{u:3,n:"Embedded questions",f:"Yes/No: S + V + if/whether + S + V\nWh-: S + V + question word + S + V",d:"Câu hỏi gián tiếp dùng trật tự câu kể, không đảo trợ động từ và chủ ngữ.",ex:"Do you know where she lives? / Tell me whether he is coming."},
+{u:3,n:"Adjective complements",f:"S + be + adjective + (that) + S + V",d:"Dùng mệnh đề that sau tính từ chỉ cảm xúc để giải thích lý do; that có thể được lược bỏ.",ex:"I'm happy (that) you enjoyed the book."},
+{u:3,n:"Embedded questions – punctuation",f:"Statement + embedded question → dấu chấm.\nQuestion + embedded question → dấu hỏi.",d:"Dấu câu phụ thuộc vào toàn bộ câu, không phải câu hỏi nằm bên trong.",ex:"I wonder where he is. / Can you tell me where he is?"},
+{u:4,n:"Past Perfect",f:"(+) S + had + V3/ed\n(-) S + had not + V3/ed\n(?) Had + S + V3/ed?",d:"Diễn tả hành động xảy ra trước một hành động hoặc thời điểm khác trong quá khứ.",ex:"When I arrived, the doctor had left."},
+{u:4,n:"Wish – present",f:"S + wish(es) + S + V2/ed\nVới BE: were/weren't",d:"Ước một tình huống hiện tại khác với thực tế.",ex:"I wish I felt better. / I wish I were at home."},
+{u:4,n:"Wish – would / could",f:"S + wish(es) + S + would/could + V",d:"Diễn tả mong muốn hoặc điều ước về hiện tại/tương lai.",ex:"I wish I could sleep. / I wish it would stop raining."},
+{u:4,n:"Wish – past regret",f:"S + wish(es) + S + had + V3/ed",d:"Diễn tả sự hối tiếc về việc đã xảy ra hoặc không xảy ra trong quá khứ.",ex:"I wish I had gone to the doctor."},
+{u:4,n:"Wish vs. hope",f:"wish + past form: mong hiện tại khác thực tế.\nhope + present/future form: hy vọng điều có thể xảy ra.",d:"Wish thường diễn tả điều trái thực tế hoặc tiếc nuối; hope diễn tả điều mong đợi có khả năng thành hiện thực.",ex:"I hope you feel better soon. / I wish I felt better."}
+];
+const EX = [
+[1,"Viết câu suy luận chắc chắn: “Cô ấy chắc hẳn đang ở nhà.”","She must be at home."],
+[1,"Viết câu dùng might: “Có thể họ sẽ đến muộn.”","They might arrive late."],
+[1,"Thêm câu hỏi đuôi: “You are busy, …?”","You are busy, aren't you?"],
+[1,"Thêm câu hỏi đuôi: “He doesn't like coffee, …?”","He doesn't like coffee, does he?"],
+[1,"Viết lại dùng Maybe: “It may rain tomorrow.”","Maybe it will rain tomorrow."],
+[2,"Dùng HAVE: “Tôi nhờ anh trai sửa máy tính.”","I had my brother fix my computer."],
+[2,"Dùng GET: “Tôi thuyết phục bạn tôi giúp tôi.”","I got my friend to help me."],
+[2,"Dùng passive causative: “Tôi đã sửa điện thoại (nhờ người khác sửa).”","I had my phone repaired."],
+[2,"Dùng MAKE: “Giáo viên bắt chúng tôi làm bài tập.”","The teacher made us do the exercise."],
+[2,"Dùng LET: “Bố mẹ cho phép tôi đi.”","My parents let me go."],
+[3,"Dùng noun clause với that: “Tôi nghĩ cuốn sách này thú vị.”","I think (that) this book is interesting."],
+[3,"Trả lời ngắn bằng so: “Is this book good?” – “Tôi nghĩ vậy.”","I think so."],
+[3,"Viết câu hỏi gián tiếp: “Bạn có biết cô ấy sống ở đâu không?”","Do you know where she lives?"],
+[3,"Viết câu hỏi gián tiếp với whether: “Hãy nói cho tôi biết liệu anh ấy có đến không.”","Tell me whether he is coming."],
+[4,"Viết phủ định Past Perfect: “Cô ấy đã chưa hoàn thành công việc.”","She hadn't finished the work."],
+[4,"Viết câu Past Perfect: “Khi tôi đến, bác sĩ đã rời đi.”","When I arrived, the doctor had left."],
+[4,"Dùng wish hiện tại: “Tôi ước tôi cảm thấy khỏe hơn.”","I wish I felt better."],
+[4,"Dùng wish + could: “Tôi ước tôi có thể ngủ.”","I wish I could sleep."],
+[4,"Dùng wish quá khứ: “Tôi ước tôi đã đi khám bác sĩ.”","I wish I had gone to the doctor."],
+[1,"Dùng be able to ở hiện tại hoàn thành: “Tôi đã có thể hiểu bài học.”","I have been able to understand the lesson."],
+[1,"Trả lời ngắn: “You're ready, aren't you?” – “Vâng, tôi sẵn sàng.”","Yes, I am."],
+[3,"Dùng adjective complement: “Tôi vui vì bạn thích cuốn sách.”","I'm happy (that) you like the book."],
+[3,"Sửa trật tự từ: “Do you know where does he live?”","Do you know where he lives?"],
+[4,"Dùng hope: “Tôi hy vọng bạn sớm khỏe lại.”","I hope you feel better soon."]
+];
+let unit="all", pool=[],idx=0,flipped=false,qpool=[],qi=0,correct=0,wrong=0,exPool=[],ei=0;
+const $=id=>document.getElementById(id);
+const norm=s=>s.toLowerCase().trim().replace(/[’']/g,"'").replace(/[.!?]+$/,"").replace(/\s+/g," ");
+function filtered(){return V.filter(x=>unit==="all"||String(x[0])===unit)}
+function filteredG(){return G.filter(x=>unit==="all"||String(x.u)===unit)}
+function updateCounts(){$("vcount").textContent=filtered().length+" từ";$("gcount").textContent=filteredG().length+" điểm ngữ pháp"}
+function setUnit(){unit=$("unit").value;pool=filtered();idx=0;flipped=false;renderCard();renderRules();renderList();startQuiz();startExercise();updateCounts()}
+function renderCard(){if(!pool.length)return;$("cardunit").textContent="UNIT "+pool[idx][0];$("front").textContent=pool[idx][1];$("hint").textContent=flipped?"":"Nhấn để xem nghĩa và ví dụ";$("back").classList.toggle("hidden",!flipped);$("meaning").textContent=pool[idx][4];$("ipa").textContent=pool[idx][2]+" · "+pool[idx][3];$("example").textContent=pool[idx][5];$("cardbar").style.width=((idx+1)/pool.length*100)+"%"}
+function flip(){flipped=!flipped;renderCard()}
+$("flash").onclick=flip;$("flash").onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();flip()}};
+$("flip").onclick=flip;$("prev").onclick=()=>{idx=(idx-1+pool.length)%pool.length;flipped=false;renderCard()};$("next").onclick=()=>{idx=(idx+1)%pool.length;flipped=false;renderCard()};
+$("shuffle").onclick=()=>{pool.sort(()=>Math.random()-.5);idx=0;flipped=false;renderCard()};
+function startQuiz(){qpool=[...filtered()].sort(()=>Math.random()-.5);qi=0;correct=0;wrong=0;showQuestion()}
+function showQuestion(){if(!qpool.length)return;let x=qpool[qi%qpool.length];$("qprogress").textContent=`Câu ${qi+1} / ${qpool.length} · Unit ${x[0]}`;$("vmeaning").textContent=x[4];$("vanswer").value="";$("vfeedback").innerHTML="";$("vscore").textContent=`Đúng: ${correct} · Sai: ${wrong}`;$("vbar").style.width=(qi%qpool.length+1)/qpool.length*100+"%";$("vanswer").focus()}
+function checkV(){let x=qpool[qi%qpool.length],a=norm($("vanswer").value),b=norm(x[1]);if(!a){$("vfeedback").innerHTML='<div class="feedback bad">Bạn hãy nhập đáp án trước nhé.</div>';return}if(a===b){correct++;$("vfeedback").innerHTML='<div class="feedback good">Chính xác! ✓ '+x[1]+'</div>'}else{wrong++;$("vfeedback").innerHTML='<div class="feedback bad">Chưa đúng. Đáp án: <b>'+x[1]+'</b></div>'}$("vscore").textContent=`Đúng: ${correct} · Sai: ${wrong}`}
+$("vcheck").onclick=checkV;$("vshow").onclick=()=>{let x=qpool[qi%qpool.length];$("vfeedback").innerHTML='<div class="feedback">Đáp án: <b>'+x[1]+'</b></div>'};$("vnext").onclick=()=>{qi++;showQuestion()};$("vanswer").addEventListener("keydown",e=>{if(e.key==="Enter")checkV()});
+function renderRules(){let gs=filteredG();$("rules").innerHTML=gs.map((g,i)=>`<article class="rule"><div class="eyebrow">UNIT ${g.u}</div><h3>${g.n}</h3><div class="formula">${g.f}</div><p>${g.d}</p><p class="small muted"><b>Ví dụ:</b> ${g.ex}</p></article>`).join("")}
+function startExercise(){exPool=EX.filter(x=>unit==="all"||String(x[0])===unit).sort(()=>Math.random()-.5);ei=0;showExercise()}
+function showExercise(){if(!exPool.length)return;let x=exPool[ei%exPool.length];$("gtitle").textContent="Unit "+x[0]+" · Viết câu đúng";$("gprompt").textContent=x[1];$("ganswer").value="";$("gmodelbox").classList.add("hidden");$("gmodelbox").textContent=""}
+$("gmodel").onclick=()=>{let x=exPool[ei%exPool.length];$("gmodelbox").textContent="Câu mẫu: "+x[2];$("gmodelbox").classList.remove("hidden")};$("gnew").onclick=()=>{ei++;showExercise()};
+function renderList(){let s=$("search").value.toLowerCase();$("wordrows").innerHTML=filtered().filter(x=>x[1].toLowerCase().includes(s)||x[4].toLowerCase().includes(s)).map(x=>`<tr><td><button class="soft" style="padding:4px 8px" onclick="speak(${JSON.stringify(x[1])})">🔊</button> <b>${x[1]}</b></td><td>${x[2]}</td><td>${x[3]}</td><td>${x[4]}</td></tr>`).join("")}
+$("search").oninput=renderList;
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active",t===b));["cards","vquiz","grammar","list"].forEach(id=>$(id).classList.toggle("hidden",id!==b.dataset.tab))});
+$("unit").onchange=setUnit;
+
+// Voice reading uses the browser's built-in speech engine; available voices depend on the device.
+function speak(text){
+ if(!("speechSynthesis" in window)){alert("Trình duyệt này chưa hỗ trợ đọc giọng nói. Hãy thử Chrome.");return;}
+ window.speechSynthesis.cancel();
+ const utter=new SpeechSynthesisUtterance(text);
+ utter.lang=$("voiceLang").value;
+ utter.rate=Number($("voiceRate").value);
+ const voices=window.speechSynthesis.getVoices();
+ const prefix=utter.lang.toLowerCase();
+ const chosen=voices.find(v=>v.lang.toLowerCase()===prefix)||voices.find(v=>v.lang.toLowerCase().startsWith(prefix.split("-")[0]));
+ if(chosen) utter.voice=chosen;
+ window.speechSynthesis.speak(utter);
+}
+$("speakCard").onclick=()=>speak(pool[idx][1]);
+$("vlisten").onclick=()=>speak(qpool[qi%qpool.length][1]);
+$("testVoice").onclick=()=>speak("Hello! Let's review Connectivity Three, Units One to Four.");
+$("stopVoice").onclick=()=>{if("speechSynthesis" in window)window.speechSynthesis.cancel()};
+setUnit();
+</script>
+</body></html>
